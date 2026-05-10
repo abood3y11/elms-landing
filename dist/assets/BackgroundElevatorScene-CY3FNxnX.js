@@ -1,4 +1,4 @@
-import{j as e,r as o}from"./index-BOYeinS4.js";import{s as u,C as a,q as i,r as l}from"./react-three-fiber.esm-DJaNpV7V.js";function m(){const t=o.useRef(null),s=o.useMemo(()=>({uTime:{value:0},uColorA:{value:new a("#0f766e")},uColorB:{value:new a("#102331")}}),[]);return i(({clock:r})=>{t.current&&(t.current.uniforms.uTime.value=r.getElapsedTime())}),e.jsxs("mesh",{position:[0,0,-2.2],scale:[8.5,5.2,1],children:[e.jsx("planeGeometry",{args:[1,1,80,80]}),e.jsx("shaderMaterial",{ref:t,transparent:!0,depthWrite:!1,uniforms:s,vertexShader:`
+import{j as e,r as o}from"./index-JJoLa8UX.js";import{s as u,C as a,q as i,r as l}from"./react-three-fiber.esm-I4LweltO.js";function m(){const t=o.useRef(null),s=o.useMemo(()=>({uTime:{value:0},uColorA:{value:new a("#0f766e")},uColorB:{value:new a("#102331")}}),[]);return i(({clock:r})=>{t.current&&(t.current.uniforms.uTime.value=r.getElapsedTime())}),e.jsxs("mesh",{position:[0,0,-2.2],scale:[8.5,5.2,1],children:[e.jsx("planeGeometry",{args:[1,1,80,80]}),e.jsx("shaderMaterial",{ref:t,transparent:!0,depthWrite:!1,uniforms:s,vertexShader:`
           varying vec2 vUv;
           uniform float uTime;
           void main() {
