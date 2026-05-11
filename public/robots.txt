@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hensline.com/sitemap.xml

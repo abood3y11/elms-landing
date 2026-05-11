@@ -352,8 +352,12 @@ function PrivacyPage() {
   return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">سياسة الخصوصية</span><h1>سياسة خصوصية {companyName}</h1><p>آخر تحديث: 10 مايو 2026</p></section><PageMotion title="privacy movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>البيانات التي نجمعها</h2><p>قد تجمع {companyName} بيانات التواصل، عنوان الموقع، نوع المبنى، معلومات المصعد، طلبات الصيانة، وسجلات الخدمة اللازمة لتقديم خدمات التركيب والصيانة وقطع الغيار.</p><h2>استخدام البيانات</h2><p>نستخدم البيانات لترتيب المعاينات، إعداد العروض الفنية، تنفيذ الصيانة، توريد قطع الغيار، متابعة العقود، والتواصل مع العملاء بخصوص الخدمات المطلوبة.</p><h2>مشاركة البيانات</h2><p>لا نبيع البيانات الشخصية. قد تتم مشاركة المعلومات مع موظفين مخولين أو مزودي خدمات موثوقين عند الحاجة لتنفيذ الخدمة أو تأمين السجلات.</p><h2>التواصل</h2><p>للاستفسارات المتعلقة بالخصوصية يمكن التواصل عبر <a href={`mailto:${companyEmail}`}>{companyEmail}</a>.</p></motion.section></main></AnimatedPage>;
 }
 
+function TermsPage() {
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">شروط الاستخدام</span><h1>شروط وأحكام خدمات {companyName}</h1><p>آخر تحديث: 11 مايو 2026</p></section><PageMotion title="terms movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>نطاق الخدمات</h2><p>تقدم {companyName} خدمات تركيب وصيانة وتحديث المصاعد وتوريد قطع الغيار وخدمات ما بعد البيع للمباني السكنية والتجارية حسب المعاينة الفنية والاتفاق مع العميل.</p><h2>طلبات المعاينة والصيانة</h2><p>عند إرسال طلب عبر الموقع أو الهاتف أو البريد الإلكتروني، قد نتواصل مع العميل لتأكيد بيانات الموقع ونوع المصعد والموعد المناسب للزيارة الفنية أو الدعم المطلوب.</p><h2>استخدام واتساب للتواصل الخدمي</h2><p>نستخدم واتساب فقط للتواصل المتعلق بالخدمة، مثل تأكيد طلبات الصيانة، تحديثات الفنيين، مواعيد المعاينة، متابعة قطع الغيار، ودعم العملاء. لا نستخدم واتساب لإرسال رسائل عشوائية أو محتوى غير مرتبط بالخدمة.</p><h2>العروض والأسعار</h2><p>أي عرض سعر أو مدة تنفيذ يعتمد على حالة الموقع ونوع المصعد وتوفر القطع والمواصفات المطلوبة. لا يعتبر الطلب مؤكدًا إلا بعد موافقة العميل على العرض النهائي.</p><h2>مسؤولية العميل</h2><p>يلتزم العميل بتوفير بيانات صحيحة عن الموقع والمصعد، وتمكين الفريق الفني من الوصول الآمن لمكان العمل، والالتزام بإرشادات السلامة أثناء المعاينة أو الصيانة.</p><h2>التواصل</h2><p>للاستفسار عن هذه الشروط يمكن التواصل عبر <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
+}
+
 function Footer() {
-  return <footer className="footer"><span>{companyName} - {companyBrand}</span><span>{companyAddress}</span><span>جوال: {companyPhones.join(' / ')}</span><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><Link to="/privacy">سياسة الخصوصية</Link></footer>;
+  return <footer className="footer"><span>{companyName} - {companyBrand}</span><span>{companyAddress}</span><span>جوال: {companyPhones.join(' / ')}</span><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><Link to="/privacy">سياسة الخصوصية</Link><Link to="/terms">شروط الاستخدام</Link></footer>;
 }
 
 export default function App() {
@@ -374,6 +378,7 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
       </Routes>
       <Footer />
     </div>

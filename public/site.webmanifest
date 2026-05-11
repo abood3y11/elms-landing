@@ -1,0 +1,19 @@
+{
+  "name": "مؤسسة حسين سفر النفيعي للمصاعد",
+  "short_name": "HENS LINE",
+  "description": "تركيب وصيانة وتحديث المصاعد وقطع الغيار وعقود الصيانة السنوية.",
+  "start_url": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar-SA",
+  "theme_color": "#0f766e",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/assets/hens-line-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
