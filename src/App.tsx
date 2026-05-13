@@ -356,8 +356,12 @@ function TermsPage() {
   return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">شروط الاستخدام</span><h1>شروط وأحكام خدمات {companyName}</h1><p>آخر تحديث: 11 مايو 2026</p></section><PageMotion title="terms movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>نطاق الخدمات</h2><p>تقدم {companyName} خدمات تركيب وصيانة وتحديث المصاعد وتوريد قطع الغيار وخدمات ما بعد البيع للمباني السكنية والتجارية حسب المعاينة الفنية والاتفاق مع العميل.</p><h2>طلبات المعاينة والصيانة</h2><p>عند إرسال طلب عبر الموقع أو الهاتف أو البريد الإلكتروني، قد نتواصل مع العميل لتأكيد بيانات الموقع ونوع المصعد والموعد المناسب للزيارة الفنية أو الدعم المطلوب.</p><h2>استخدام واتساب للتواصل الخدمي</h2><p>نستخدم واتساب فقط للتواصل المتعلق بالخدمة، مثل تأكيد طلبات الصيانة، تحديثات الفنيين، مواعيد المعاينة، متابعة قطع الغيار، ودعم العملاء. لا نستخدم واتساب لإرسال رسائل عشوائية أو محتوى غير مرتبط بالخدمة.</p><h2>العروض والأسعار</h2><p>أي عرض سعر أو مدة تنفيذ يعتمد على حالة الموقع ونوع المصعد وتوفر القطع والمواصفات المطلوبة. لا يعتبر الطلب مؤكدًا إلا بعد موافقة العميل على العرض النهائي.</p><h2>مسؤولية العميل</h2><p>يلتزم العميل بتوفير بيانات صحيحة عن الموقع والمصعد، وتمكين الفريق الفني من الوصول الآمن لمكان العمل، والالتزام بإرشادات السلامة أثناء المعاينة أو الصيانة.</p><h2>التواصل</h2><p>للاستفسار عن هذه الشروط يمكن التواصل عبر <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
 }
 
+function DataDeletionPage() {
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">حذف البيانات</span><h1>تعليمات حذف بيانات المستخدم</h1><p>آخر تحديث: 13 مايو 2026</p></section><PageMotion title="data deletion movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>كيفية طلب حذف البيانات</h2><p>يمكنك طلب حذف بياناتك المرتبطة بالتواصل مع {companyName} عبر إرسال رسالة إلى البريد الإلكتروني <a href={`mailto:${companyEmail}`}>{companyEmail}</a> بعنوان: طلب حذف بيانات.</p><h2>المعلومات المطلوبة في الطلب</h2><p>يرجى تضمين الاسم، رقم الجوال المستخدم في التواصل، ووصف مختصر للطلب حتى نتمكن من تحديد السجلات المرتبطة بك ومعالجتها بشكل صحيح.</p><h2>مدة معالجة الطلب</h2><p>نراجع طلبات حذف البيانات خلال مدة تصل إلى 30 يومًا من تاريخ استلام الطلب، وقد نتواصل معك للتحقق من الهوية أو استكمال معلومات ناقصة.</p><h2>البيانات التي قد نحتفظ بها</h2><p>قد نحتفظ ببعض السجلات اللازمة للالتزامات النظامية أو المحاسبية أو لحماية الحقوق القانونية، مع تقليل البيانات إلى الحد المطلوب فقط.</p><h2>قنوات التواصل</h2><p>يمكن إرسال الطلب عبر البريد الإلكتروني <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو التواصل عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
+}
+
 function Footer() {
-  return <footer className="footer"><span>{companyName} - {companyBrand}</span><span>{companyAddress}</span><span>جوال: {companyPhones.join(' / ')}</span><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><Link to="/privacy">سياسة الخصوصية</Link><Link to="/terms">شروط الاستخدام</Link></footer>;
+  return <footer className="footer"><span>{companyName} - {companyBrand}</span><span>{companyAddress}</span><span>جوال: {companyPhones.join(' / ')}</span><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><Link to="/privacy">سياسة الخصوصية</Link><Link to="/terms">شروط الاستخدام</Link><Link to="/data-deletion">حذف البيانات</Link></footer>;
 }
 
 export default function App() {
@@ -379,6 +383,7 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/data-deletion" element={<DataDeletionPage />} />
       </Routes>
       <Footer />
     </div>
