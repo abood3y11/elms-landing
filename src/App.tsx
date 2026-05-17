@@ -25,10 +25,9 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import type { Transition } from 'framer-motion';
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 
 const ElevatorScene = lazy(() => import('./components/ElevatorScene'));
-const RailElevatorScene = lazy(() => import('./components/RailElevatorScene'));
 const BackgroundElevatorScene = lazy(() => import('./components/BackgroundElevatorScene'));
 const AnimeElevatorShowcase = lazy(() => import('./components/AnimeElevatorShowcase'));
 
@@ -185,93 +184,11 @@ function PageMotion({ title }: { title: string }) {
   return <section className="page-motion" aria-label={title}><div className="motion-track slow">{[...workCards, ...workCards].map((item, index) => <span key={`${title}-${item}-${index}`}>{item}</span>)}</div></section>;
 }
 
-const homeTimelineItems = [
-  'البداية',
-  'الخدمات',
-  'المنتجات',
-  'المشاريع',
-  'الخبرة',
-  'طلب عرض',
-];
-
-function ScrollElevatorRail() {
-  const railRef = useRef<HTMLDivElement>(null);
-  const elevatorRef = useRef<HTMLDivElement>(null);
-  const activeIndexRef = useRef(0);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    let frame = 0;
-
-    const update = () => {
-      frame = 0;
-      const rail = railRef.current;
-      const elevator = elevatorRef.current;
-      if (!rail || !elevator) return;
-
-      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
-      const travel = Math.max(0, rail.clientHeight - elevator.clientHeight);
-      const nextActiveIndex = Math.min(homeTimelineItems.length - 1, Math.round(progress * (homeTimelineItems.length - 1)));
-
-      elevator.style.transform = `translate3d(0, ${progress * travel}px, 0)`;
-      rail.style.setProperty('--scroll-progress', String(progress));
-
-      if (nextActiveIndex !== activeIndexRef.current) {
-        activeIndexRef.current = nextActiveIndex;
-        setActiveIndex(nextActiveIndex);
-      }
-    };
-
-    const requestUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, []);
-
-  return (
-    <aside className="home-scroll-rail" aria-label="مسار تمرير خدمات المصاعد">
-      <div className="rail-head">
-        <span>مسار الخدمة</span>
-        <strong>HENS LINE</strong>
-      </div>
-      <div ref={railRef} className="rail-track">
-        <div className="rail-line" />
-        <div className="rail-progress-line" />
-        <div ref={elevatorRef} className="rail-elevator-model">
-          <Suspense fallback={<div className="rail-loading">3D</div>}>
-            <RailElevatorScene />
-          </Suspense>
-        </div>
-        <div className="rail-dots">
-          {homeTimelineItems.map((item, index) => (
-            <span className={index <= activeIndex ? 'active' : undefined} key={item} style={{ top: `${(index / (homeTimelineItems.length - 1)) * 100}%` }}>
-              <i />
-              <b>{item}</b>
-            </span>
-          ))}
-        </div>
-      </div>
-    </aside>
-  );
-}
-
 function HomePage() {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -120]);
   return (
     <AnimatedPage>
-      <ScrollElevatorRail />
       <section className="hero-section">
         <motion.div className="hero-copy" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <span className="eyebrow"><Sparkles size={16} />مؤسسة تركيب وصيانة مصاعد</span>
@@ -290,8 +207,8 @@ function HomePage() {
       <ProductsPreview />
       <MotionSection className="section project-section"><div className="section-heading"><span className="eyebrow">أنواع المشاريع</span><h2>نخدم المباني التي تحتاج مصاعد آمنة واعتمادية يومية.</h2></div><div className="project-grid">{projectTypes.map((item) => <article key={item.title}><img src={item.image} alt={item.title} /><span>{item.title}</span></article>)}</div></MotionSection>
       <MotionSection className="section testimonials-section"><div className="section-heading"><span className="eyebrow">آراء العملاء</span><h2>تجربة خدمة واضحة من أول معاينة حتى ما بعد التسليم.</h2></div><div className="testimonial-marquee"><div className="testimonial-track">{[...testimonials, ...testimonials].map(([name, text, score], index) => <article key={`${name}-${index}`}><RatingStars score={score} /><strong>{name}</strong><p>{text}</p></article>)}</div></div></MotionSection>
-      <MotionSection className="section experience-years-section"><div className="years-badge"><strong>30</strong><span>سنة خبرة</span></div><div><span className="eyebrow">خبرتنا</span><h2>ثلاثونا عامًا في خدمة المصاعد والصيانة الميدانية.</h2><p>خبرة طويلة في تركيب وصيانة وتحديث المصاعد للمنازل والمباني التجارية، مع فهم عملي لاحتياجات العملاء واشتراطات السلامة.</p></div><div className="years-list"><span>تركيب وصيانة مصاعد</span><span>خدمة ما بعد البيع</span><span>عقود صيانة سنوية</span></div></MotionSection>
-      <MotionSection className="section quote-section"><div className="section-heading"><span className="eyebrow">طلب عرض سعر</span><h2>أرسل تفاصيل مشروعك وسنقترح الحل المناسب.</h2></div><QuoteForm /></MotionSection>
+      <MotionSection className="section experience-years-section"><div className="years-badge"><strong>30</strong><span>سنة خبرة</span></div><div><span className="eyebrow">خبرتنا</span><h2>أكثر من ثلاثين عامًا في خدمة المصاعد والصيانة الميدانية.</h2><p>خبرة طويلة في تركيب وصيانة وتحديث المصاعد للمنازل والمباني التجارية، مع فهم عملي لاحتياجات العملاء واشتراطات السلامة.</p></div><div className="years-list"><span>تركيب وصيانة مصاعد</span><span>خدمة ما بعد البيع</span><span>عقود صيانة سنوية</span></div></MotionSection>
+      <MotionSection className="section quote-section"><div className="section-heading"><span className="eyebrow">طلب عرض سعر</span><h2>أرسل تفاصيل مشروعك وسنقترح الحل المناسب.</h2></div><div className='form'><QuoteForm /></div></MotionSection>
     </AnimatedPage>
   );
 }
@@ -353,11 +270,15 @@ function PrivacyPage() {
 }
 
 function TermsPage() {
-  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">شروط الاستخدام</span><h1>شروط وأحكام خدمات {companyName}</h1><p>آخر تحديث: 11 مايو 2026</p></section><PageMotion title="terms movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>نطاق الخدمات</h2><p>تقدم {companyName} خدمات تركيب وصيانة وتحديث المصاعد وتوريد قطع الغيار وخدمات ما بعد البيع للمباني السكنية والتجارية حسب المعاينة الفنية والاتفاق مع العميل.</p><h2>طلبات المعاينة والصيانة</h2><p>عند إرسال طلب عبر الموقع أو الهاتف أو البريد الإلكتروني، قد نتواصل مع العميل لتأكيد بيانات الموقع ونوع المصعد والموعد المناسب للزيارة الفنية أو الدعم المطلوب.</p><h2>استخدام واتساب للتواصل الخدمي</h2><p>نستخدم واتساب فقط للتواصل المتعلق بالخدمة، مثل تأكيد طلبات الصيانة، تحديثات الفنيين، مواعيد المعاينة، متابعة قطع الغيار، ودعم العملاء. لا نستخدم واتساب لإرسال رسائل عشوائية أو محتوى غير مرتبط بالخدمة.</p><h2>العروض والأسعار</h2><p>أي عرض سعر أو مدة تنفيذ يعتمد على حالة الموقع ونوع المصعد وتوفر القطع والمواصفات المطلوبة. لا يعتبر الطلب مؤكدًا إلا بعد موافقة العميل على العرض النهائي.</p><h2>مسؤولية العميل</h2><p>يلتزم العميل بتوفير بيانات صحيحة عن الموقع والمصعد، وتمكين الفريق الفني من الوصول الآمن لمكان العمل، والالتزام بإرشادات السلامة أثناء المعاينة أو الصيانة.</p><h2>التواصل</h2><p>للاستفسار عن هذه الشروط يمكن التواصل عبر <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">شروط الاستخدام</span><h1>شروط وأحكام خدمات {companyName}</h1><p>آخر تحديث: 17 مايو 2026</p></section><PageMotion title="terms movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>نطاق الخدمات</h2><p>تقدم {companyName} خدمات تركيب وصيانة وتحديث المصاعد وتوريد قطع الغيار وخدمات ما بعد البيع للمباني السكنية والتجارية حسب المعاينة الفنية والاتفاق مع العميل.</p><h2>طلبات المعاينة والصيانة</h2><p>عند إرسال طلب عبر الموقع أو الهاتف أو البريد الإلكتروني، قد نتواصل مع العميل لتأكيد بيانات الموقع ونوع المصعد والموعد المناسب للزيارة الفنية أو الدعم المطلوب.</p><h2>استخدام واتساب للتواصل الخدمي</h2><p>نستخدم واتساب فقط للتواصل المتعلق بالخدمة، مثل تأكيد طلبات الصيانة، تحديثات الفنيين، مواعيد المعاينة، متابعة قطع الغيار، ودعم العملاء. لا نستخدم واتساب لإرسال رسائل عشوائية أو محتوى غير مرتبط بالخدمة.</p><h2>العروض والأسعار</h2><p>أي عرض سعر أو مدة تنفيذ يعتمد على حالة الموقع ونوع المصعد وتوفر القطع والمواصفات المطلوبة. لا يعتبر الطلب مؤكدًا إلا بعد موافقة العميل على العرض النهائي.</p><h2>التواصل</h2><p>للاستفسار عن هذه الشروط يمكن التواصل عبر <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
 }
 
 function DataDeletionPage() {
-  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">حذف البيانات</span><h1>تعليمات حذف بيانات المستخدم</h1><p>آخر تحديث: 13 مايو 2026</p></section><PageMotion title="data deletion movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>كيفية طلب حذف البيانات</h2><p>يمكنك طلب حذف بياناتك المرتبطة بالتواصل مع {companyName} عبر إرسال رسالة إلى البريد الإلكتروني <a href={`mailto:${companyEmail}`}>{companyEmail}</a> بعنوان: طلب حذف بيانات.</p><h2>المعلومات المطلوبة في الطلب</h2><p>يرجى تضمين الاسم، رقم الجوال المستخدم في التواصل، ووصف مختصر للطلب حتى نتمكن من تحديد السجلات المرتبطة بك ومعالجتها بشكل صحيح.</p><h2>مدة معالجة الطلب</h2><p>نراجع طلبات حذف البيانات خلال مدة تصل إلى 30 يومًا من تاريخ استلام الطلب، وقد نتواصل معك للتحقق من الهوية أو استكمال معلومات ناقصة.</p><h2>البيانات التي قد نحتفظ بها</h2><p>قد نحتفظ ببعض السجلات اللازمة للالتزامات النظامية أو المحاسبية أو لحماية الحقوق القانونية، مع تقليل البيانات إلى الحد المطلوب فقط.</p><h2>قنوات التواصل</h2><p>يمكن إرسال الطلب عبر البريد الإلكتروني <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو التواصل عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">حذف البيانات</span><h1>تعليمات حذف بيانات المستخدم</h1><p>آخر تحديث: 17 مايو 2026</p></section><PageMotion title="data deletion movement" /><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>كيفية طلب حذف البيانات</h2><p>يمكنك طلب حذف بياناتك المرتبطة بالتواصل مع {companyName} عبر إرسال رسالة إلى البريد الإلكتروني <a href={`mailto:${companyEmail}`}>{companyEmail}</a> بعنوان: طلب حذف بيانات.</p><h2>المعلومات المطلوبة في الطلب</h2><p>يرجى تضمين الاسم، رقم الجوال المستخدم في التواصل، ووصف مختصر للطلب حتى نتمكن من تحديد السجلات المرتبطة بك ومعالجتها بشكل صحيح.</p><h2>مدة معالجة الطلب</h2><p>نراجع طلبات حذف البيانات خلال مدة تصل إلى 30 يومًا من تاريخ استلام الطلب، وقد نتواصل معك للتحقق من الهوية أو استكمال معلومات ناقصة.</p><h2>البيانات التي قد نحتفظ بها</h2><p>قد نحتفظ ببعض السجلات اللازمة للالتزامات النظامية أو المحاسبية أو لحماية الحقوق القانونية، مع تقليل البيانات إلى الحد المطلوب فقط.</p><h2>قنوات التواصل</h2><p>يمكن إرسال الطلب عبر البريد الإلكتروني <a href={`mailto:${companyEmail}`}>{companyEmail}</a> أو التواصل عبر أرقام المؤسسة: {companyPhones.join(' / ')}.</p></motion.section></main></AnimatedPage>;
+}
+
+function FacebookCallbackPage() {
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">OAuth Callback</span><h1>تم تجهيز رابط إعادة توجيه تسجيل الدخول.</h1><p>هذا الرابط مخصص لاستقبال نتيجة تسجيل الدخول عبر Facebook OAuth وربطه بخدمات العملاء عند تفعيل التكامل.</p></section><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>رابط callback المعتمد</h2><p>استخدم هذا الرابط داخل إعدادات Meta ضمن Valid OAuth Redirect URIs:</p><p><strong>https://hensline.com/auth/facebook/callback</strong></p><h2>ملاحظة أمان</h2><p>يتم استخدام هذا المسار فقط لتسجيل الدخول المصرح به، ولا يستخدم لإرسال رسائل تسويقية أو معالجة بيانات خارج نطاق موافقة المستخدم.</p></motion.section></main></AnimatedPage>;
 }
 
 function Footer() {
@@ -384,6 +305,7 @@ export default function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/data-deletion" element={<DataDeletionPage />} />
+        <Route path="/auth/facebook/callback" element={<FacebookCallbackPage />} />
       </Routes>
       <Footer />
     </div>
