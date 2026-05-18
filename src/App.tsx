@@ -25,18 +25,19 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import type { Transition } from 'framer-motion';
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 
 const ElevatorScene = lazy(() => import('./components/ElevatorScene'));
+const RailElevatorScene = lazy(() => import('./components/RailElevatorScene'));
 const BackgroundElevatorScene = lazy(() => import('./components/BackgroundElevatorScene'));
 const AnimeElevatorShowcase = lazy(() => import('./components/AnimeElevatorShowcase'));
 
 const companyName = 'مؤسسة حسين سفر النفيعي للمصاعد';
 const companyBrand = 'HENS LINE';
 const companyEmail = 'elevatorsystem@avix-net.com';
-const companyVat = '٣٠٠٣٨٥٣٦٦٧٠٠٠٠٣';
-const companyCr = '٤٠٣١٠٢١٩٤٨';
-const companyPhones = ['0546484040', '0571207000'];
+const companyVat = '300385366700003';
+const companyCr = '4031021948';
+const companyPhones = ['0571207000'];
 const companyAddress = 'مكة المكرمة - شارع المنصور';
 
 const pageTransition: Transition = { duration: 0.58, ease: 'easeOut' };
@@ -114,9 +115,9 @@ const articles = [
 ];
 
 const branches = [
-  ['مكة المكرمة', 'شارع المنصور', '0546484040'],
+  ['مكة المكرمة', 'شارع المنصور', '0571207000'],
   ['خدمة العملاء', 'طلبات الصيانة والمعاينة', '0571207000'],
-  ['منطقة مكة', 'تركيب وصيانة المصاعد', '0546484040'],
+  ['منطقة مكة', 'تركيب وصيانة المصاعد', '0571207000'],
   ['خدمات الطوارئ', 'دعم فني للمصاعد', '0571207000'],
 ];
 
@@ -170,6 +171,7 @@ function Header() {
       <button className="menu-button" onClick={() => setOpen((value) => !value)} aria-label="فتح القائمة">{open ? <X /> : <Menu />}</button>
       <nav className={open ? 'nav nav-open' : 'nav'}>
         {navItems.map(([label, path]) => <NavLink key={path} to={path} onClick={() => setOpen(false)}>{label}</NavLink>)}
+        <a className="nav-cta nav-call" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={16} /> اتصل بنا</a>
         <a className="nav-cta" href={`mailto:${companyEmail}`}>اطلب معاينة</a>
       </nav>
     </header>
@@ -184,17 +186,99 @@ function PageMotion({ title }: { title: string }) {
   return <section className="page-motion" aria-label={title}><div className="motion-track slow">{[...workCards, ...workCards].map((item, index) => <span key={`${title}-${item}-${index}`}>{item}</span>)}</div></section>;
 }
 
+const homeTimelineItems = [
+  'البداية',
+  'الخدمات',
+  'المنتجات',
+  'المشاريع',
+  'الخبرة',
+  'طلب عرض',
+];
+
+function ScrollElevatorRail() {
+  const railRef = useRef<HTMLDivElement>(null);
+  const elevatorRef = useRef<HTMLDivElement>(null);
+  const activeIndexRef = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const rail = railRef.current;
+      const elevator = elevatorRef.current;
+      if (!rail || !elevator) return;
+
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      const travel = Math.max(0, rail.clientHeight - elevator.clientHeight);
+      const nextActiveIndex = Math.min(homeTimelineItems.length - 1, Math.round(progress * (homeTimelineItems.length - 1)));
+
+      elevator.style.transform = `translate3d(0, ${progress * travel}px, 0)`;
+      rail.style.setProperty('--scroll-progress', String(progress));
+
+      if (nextActiveIndex !== activeIndexRef.current) {
+        activeIndexRef.current = nextActiveIndex;
+        setActiveIndex(nextActiveIndex);
+      }
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, []);
+
+  return (
+    <aside className="home-scroll-rail" aria-label="مسار هبوط المصعد مع التمرير">
+      <div className="rail-head">
+        <span>مسار الخدمة</span>
+        <strong>HENS LINE</strong>
+      </div>
+      <div ref={railRef} className="rail-track">
+        <div className="rail-line" />
+        <div className="rail-progress-line" />
+        <div ref={elevatorRef} className="rail-elevator-model">
+          <Suspense fallback={<div className="rail-loading">3D</div>}>
+            <RailElevatorScene />
+          </Suspense>
+        </div>
+        <div className="rail-dots">
+          {homeTimelineItems.map((item, index) => (
+            <span className={index <= activeIndex ? 'active' : undefined} key={item} style={{ top: `${(index / (homeTimelineItems.length - 1)) * 100}%` }}>
+              <i />
+              <b>{item}</b>
+            </span>
+          ))}
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 function HomePage() {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -120]);
   return (
     <AnimatedPage>
+      <ScrollElevatorRail />
       <section className="hero-section">
         <motion.div className="hero-copy" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <span className="eyebrow"><Sparkles size={16} />مؤسسة تركيب وصيانة مصاعد</span>
           <h1>مصاعد آمنة للفلل والمباني التجارية.</h1>
           <p>{companyName} تقدم تركيب المصاعد، الصيانة الوقائية، تحديث المصاعد القديمة، قطع الغيار، وعقود الخدمة السنوية مع دعم طوارئ.</p>
-          <div className="hero-actions"><Link className="primary-action" to="/services">شاهد الخدمات<ArrowLeft size={18} /></Link><a className="secondary-action" href={`mailto:${companyEmail}`}>اطلب معاينة</a></div>
+          <div className="hero-actions"><Link className="primary-action" to="/services">شاهد الخدمات<ArrowLeft size={18} /></Link><a className="secondary-action call-action" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={18} /> اتصل بنا {companyPhones[0]}</a><a className="secondary-action" href={`mailto:${companyEmail}`}>اطلب معاينة</a></div>
         </motion.div>
         <motion.div className="hero-media" style={{ y }}>
           <div className="hero-image-slider">{heroImages.map((src, index) => <img key={src} src={src} alt="أعمال مصاعد وصيانة" style={{ animationDelay: `${index * 4}s` }} />)}<div className="hero-image-overlay"><strong>Installation • Maintenance • Modernization</strong><span>24/7 Technical Support</span></div></div>

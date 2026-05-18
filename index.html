@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="/assets/hens-line-logo.svg" />
     <link rel="apple-touch-icon" href="/assets/hens-line-logo.svg" />
     <link rel="manifest" href="/site.webmanifest" />
-
+    
     <meta property="og:locale" content="ar_SA" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="HENS LINE" />
@@ -51,7 +51,16 @@
         "logo": "https://hensline.com/assets/hens-line-logo.svg",
         "image": "https://hensline.com/assets/hens-line-logo.svg",
         "email": "elevatorsystem@avix-net.com",
-        "telephone": ["+966546484040", "+966571207000"],
+        "telephone": ["+966571207000"],
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "+966571207000",
+            "contactType": "customer service",
+            "areaServed": "SA",
+            "availableLanguage": ["Arabic", "English"]
+          }
+        ],
         "taxID": "300385366700003",
         "address": {
           "@type": "PostalAddress",
@@ -67,7 +76,12 @@
         ],
         "priceRange": "$$",
         "description": "مؤسسة متخصصة في تركيب وصيانة وتحديث المصاعد وتوريد قطع الغيار وعقود الصيانة السنوية.",
-        "sameAs": ["https://hensline.com/"]
+        "sameAs": ["https://hensline.com/"],
+        "potentialAction": {
+          "@type": "CommunicateAction",
+          "target": "tel:+966571207000",
+          "name": "Call HENS LINE"
+        }
       }
     </script>
     <script type="application/ld+json">

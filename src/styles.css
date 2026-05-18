@@ -304,6 +304,11 @@ textarea {
   background: var(--mint);
 }
 
+.nav .nav-call {
+  gap: 6px;
+  background: var(--navy);
+}
+
 .menu-button {
   display: none;
   width: 44px;
@@ -407,6 +412,12 @@ h3 {
   color: var(--mint-dark);
   border: 1px solid var(--line);
   background: #ffffff;
+}
+
+.call-action {
+  color: var(--navy);
+  border-color: rgba(15, 118, 110, 0.28);
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .scene-shell,
