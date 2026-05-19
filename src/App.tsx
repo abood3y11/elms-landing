@@ -143,6 +143,27 @@ const projectTypes = [
   { title: 'مبان متعددة الأدوار', image: 'https://images.openai.com/static-rsc-4/pjT4OrlpvjDnczMEjt8ABh8S-jK9uj-HCKhUJlJX998paaz-LE5qW5YaSTZUg_d7OdVa75-Fcoe5qF-r5xK34W10jDBR8v9MhdsiCVmuD-39MBVpPpp8FfL6563CKlQL4EPUW_elSRPvazxN11y5k3p6IRK4DC6NAwDYvbq_nYhatRBTwxqisA3u9FK5_m5p?purpose=fullsize' },
 ];
 
+const portfolioProjects = [
+  { title: 'مصاعد فلل خاصة', image: '/img/IMG_0182-scaled.jpg', text: 'حلول مصاعد منزلية بتشغيل هادئ وتشطيبات تناسب الاستخدام اليومي داخل الفلل.' },
+  { title: 'صيانة مبان سكنية', image: '/img/IMG_0191-scaled.jpg', text: 'زيارات وقائية وفحص أبواب ولوحات تحكم وتقارير حالة للمصاعد متعددة الاستخدام.' },
+  { title: 'لوحات تحكم وقطع غيار', image: '/img/PHOTO-2024-09-15-20-52-25.jpeg', text: 'توريد وتركيب مكونات كهربائية وميكانيكية بعد الفحص الفني وتحديد القطعة المناسبة.' },
+  { title: 'تحديث كبائن المصاعد', image: '/img/IMG_1011-scaled.jpg', text: 'تجديد داخلي وتحسين تجربة الركاب مع المحافظة على متطلبات السلامة والتشغيل.' },
+];
+
+const maintenanceContracts = [
+  { title: 'عقد صيانة وقائية', text: 'زيارات مجدولة، فحص سلامة، تنظيف وتشحيم، واختبار أبواب وتشغيل لتقليل الأعطال المفاجئة.' },
+  { title: 'عقد صيانة شامل', text: 'متابعة دورية مع أولوية استجابة للأعطال وتوصيات فنية واضحة لقطع الغيار والتحديث.' },
+  { title: 'دعم أعطال وطوارئ', text: 'استقبال بلاغات التوقف والحالات العاجلة وتوجيه فريق فني حسب موقع العميل وحالة المصعد.' },
+  { title: 'تقارير شهرية', text: 'توثيق حالة المصعد والزيارات والملاحظات الفنية حتى يعرف المالك ما تم وما يحتاج متابعة.' },
+];
+
+const customerSegments = [
+  { title: 'ملاك الفلل', text: 'تركيب وصيانة مصاعد منزلية آمنة بتصميم مناسب للمساحات الخاصة والاستخدام العائلي.' },
+  { title: 'المقاولون والمطورون', text: 'تنسيق فني مع المشروع من المعاينة حتى التسليم، مع اختيار مواصفات مناسبة للمبنى.' },
+  { title: 'المباني التجارية', text: 'عقود صيانة للمباني التي تحتاج جاهزية تشغيلية مستمرة وتقليل فترات التوقف.' },
+  { title: 'المنشآت الصحية', text: 'حلول مصاعد واسعة ومستقرة للاستخدام المتكرر ونقل المرضى والمعدات بأمان.' },
+];
+
 const heroImages = [
   'https://images.openai.com/static-rsc-4/_6JY_31aiFKvBJF48itsdh4MZRzg6N5pdn_DaTAPd97SAj2WkGPF9qV7DK0bwwYqWAJYGgrQRQoGi6SYJ3WbvX7mwVjgWFwNHjKmp5kzKlwNCWzSO9-RHiIhocTh9j1C6-HKIqlH0TMW6oo7I1LMEzIoR-80GNRX6Yr9O0ZTCuej9cmnsN_alljC28Pl-rM7?purpose=fullsize',
   'https://images.openai.com/static-rsc-4/npZXNTzLAghorrqFsrMydKl2mrMwzRyz6ZSHVk7Hc1u98mv3F1U_VJ3PD1Ssn0ofEjh4HtDlQlytOmCfS_KjEwyq5Ai6kstnc6EeYT5Nq0Z2GnMFCY2ra0ffYBNWD34c-YpqMLICdiGRuT0JsLWz7duxR0gSAeSG7OEGxUXEM_3vgAee9IfUQLrh6hht_T9o?purpose=fullsize',
@@ -164,7 +185,7 @@ const timeline = [
 
 function Header() {
   const [open, setOpen] = useState(false);
-  const navItems = [['الرئيسية', '/'], ['من نحن', '/about'], ['الخدمات', '/services'], ['المنتجات', '/products'], ['قطع غيار', '/spare-parts'], ['المقالات', '/articles'], ['الميديا', '/media'], ['الفروع', '/branches'], ['تواصل معنا', '/contact']];
+  const navItems = [['الرئيسية', '/'], ['من نحن', '/about'], ['الخدمات', '/services'], ['المشاريع', '/projects'], ['عقود الصيانة', '/maintenance-contracts'], ['المنتجات', '/products'], ['قطع غيار', '/spare-parts'], ['عملاؤنا', '/customers'], ['الميديا', '/media'], ['تواصل معنا', '/contact']];
   return (
     <header className="site-header">
       <Link className="brand" to="/"><img src="/assets/hens-line-logo.svg" alt={companyName} /><span className="brand-text"><strong>{companyBrand}</strong><small>{companyName}</small></span></Link>
@@ -321,6 +342,14 @@ function ServicesPage() {
   return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">الخدمات</span><h1>خدمات تركيب وصيانة وتحديث المصاعد.</h1><p>خدمات متكاملة تبدأ من المعاينة الفنية وتنتهي بالتسليم والصيانة الدورية.</p></section><PageMotion title="services movement" /><section className="service-grid page-grid">{services.map((service) => <article className="service-card" key={service.title}><div className="card-icon">{service.icon}</div><h3>{service.title}</h3><p>{service.text}</p></article>)}</section></main></AnimatedPage>;
 }
 
+function ProjectsPage() {
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">المشاريع</span><h1>أعمال تركيب وصيانة وتحديث مصاعد على أرض الواقع.</h1><p>نعرض أنواع الأعمال التي تنفذها المؤسسة في الفلل والمباني السكنية والتجارية، مع صور من ملفات المشاريع والصيانة وقطع الغيار.</p></section><section className="media-highlight"><img src="/img/IMG_0185-scaled.jpg" alt="أعمال مصاعد فعلية" /><div><Building2 /><h2>مشاريع مصاعد موثقة بصور وخدمات واضحة</h2><p>الموقع يعرض نشاط المؤسسة كشركة مصاعد فعلية: تركيب، صيانة، تحديث، قطع غيار، ومعاينات ميدانية للمباني.</p></div></section><section className="project-grid page-grid">{portfolioProjects.map((project) => <article key={project.title}><img src={project.image} alt={project.title} /><span>{project.title}</span></article>)}</section><section className="article-grid page-grid">{portfolioProjects.map((project) => <article key={`${project.title}-details`}><ClipboardCheck /><span>ملف عمل</span><h2>{project.title}</h2><p>{project.text}</p></article>)}</section></main></AnimatedPage>;
+}
+
+function MaintenanceContractsPage() {
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">عقود الصيانة</span><h1>عقود صيانة مصاعد شهرية وسنوية للمباني.</h1><p>الصيانة الدورية هي أساس سلامة المصعد واستمرارية تشغيله. نوفر خطط متابعة واضحة تشمل الفحص، التقارير، الاستجابة للأعطال، وتوصيات قطع الغيار.</p></section><PageMotion title="maintenance contracts movement" /><section className="service-grid page-grid">{maintenanceContracts.map((contract) => <article className="service-card" key={contract.title}><div className="card-icon"><ClipboardCheck /></div><h3>{contract.title}</h3><p>{contract.text}</p></article>)}</section><section className="timeline page-grid">{timeline.map((step) => <article key={step.title}><div className="timeline-icon">{step.icon}</div><h3>{step.title}</h3><p>{step.text}</p></article>)}</section></main></AnimatedPage>;
+}
+
 function ProductsPage() {
   return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">المنتجات</span><h1>مصاعد للمنازل والمباني التجارية والصحية.</h1><p>اختر نوع المصعد المناسب للمبنى، ثم اطلع على تفاصيل الحل والمزايا الفنية.</p></section><section className="product-grid page-grid">{products.map((product) => <article key={product.title}><img src={product.image} alt={product.title} /><h3>{product.title}</h3><p>{product.text}</p><Link to={`/products/${product.slug}`}>تفاصيل المنتج</Link></article>)}</section></main></AnimatedPage>;
 }
@@ -335,6 +364,10 @@ function ArticlesPage() {
 
 function MediaPage() {
   return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">الميديا</span><h1>صور من أعمال ومشاريع المصاعد.</h1><p>معرض صور من ملفات الأعمال والمشاريع الموجودة داخل الموقع.</p></section><section className="media-grid">{localMedia.map((src, index) => <article key={src}><img src={src} alt={`صورة مشروع ${index + 1}`} /><span><ImageIcon size={16} /> مشروع {index + 1}</span></article>)}</section></main></AnimatedPage>;
+}
+
+function CustomersPage() {
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">عملاؤنا</span><h1>نخدم ملاك ومقاولين ومنشآت تحتاج مصاعد آمنة.</h1><p>تعمل {companyName} مع شرائح مختلفة من العملاء، وكل شريحة تحتاج طريقة تعامل واضحة من المعاينة حتى الصيانة وخدمة ما بعد البيع.</p></section><section className="article-grid page-grid">{customerSegments.map((segment) => <article key={segment.title}><ShieldCheck /><span>شريحة عملاء</span><h2>{segment.title}</h2><p>{segment.text}</p></article>)}</section><section className="company-info-strip"><span>سجل تجاري: {companyCr}</span><span>الرقم الضريبي: {companyVat}</span><span>رقم التواصل: {companyPhones[0]}</span><span>العنوان: {companyAddress}</span></section></main></AnimatedPage>;
 }
 
 function BranchesPage() {
@@ -378,11 +411,14 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/experience" element={<ExperiencePage />} />
         <Route path="/services" element={<ServicesPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/maintenance-contracts" element={<MaintenanceContractsPage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:slug" element={<ProductDetailsPage />} />
         <Route path="/spare-parts" element={<SparePartsPage />} />
         <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/media" element={<MediaPage />} />
+        <Route path="/customers" element={<CustomersPage />} />
         <Route path="/branches" element={<BranchesPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
