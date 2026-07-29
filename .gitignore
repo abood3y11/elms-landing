@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+
+# Stray installers / binaries — build output, not source.
+*.exe
