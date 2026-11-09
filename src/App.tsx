@@ -1,4 +1,4 @@
-import { Link, NavLink, Route, Routes, useParams } from 'react-router-dom';
+import { Link, NavLink, Route, Routes, useParams, useSearchParams } from 'react-router-dom';
 import {
   Activity,
   ArrowLeft,
@@ -26,6 +26,8 @@ import {
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
 import type { Transition } from 'framer-motion';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import QuoteForm from './components/QuoteForm';
+import type { LeadService, LeadSource } from './lib/leads';
 
 const ElevatorScene = lazy(() => import('./components/ElevatorScene'));
 const RailElevatorScene = lazy(() => import('./components/RailElevatorScene'));
@@ -193,7 +195,7 @@ function Header() {
       <nav className={open ? 'nav nav-open' : 'nav'}>
         {navItems.map(([label, path]) => <NavLink key={path} to={path} onClick={() => setOpen(false)}>{label}</NavLink>)}
         <a className="nav-cta nav-call" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={16} /> اتصل بنا</a>
-        <a className="nav-cta" href={`mailto:${companyEmail}`}>اطلب معاينة</a>
+        <Link className="nav-cta" to="/quote" onClick={() => setOpen(false)}>اطلب معاينة</Link>
       </nav>
     </header>
   );
@@ -299,7 +301,7 @@ function HomePage() {
           <span className="eyebrow"><Sparkles size={16} />مؤسسة تركيب وصيانة مصاعد</span>
           <h1>مصاعد آمنة للفلل والمباني التجارية.</h1>
           <p>{companyName} تقدم تركيب المصاعد، الصيانة الوقائية، تحديث المصاعد القديمة، قطع الغيار، وعقود الخدمة السنوية مع دعم طوارئ.</p>
-          <div className="hero-actions"><Link className="primary-action" to="/services">شاهد الخدمات<ArrowLeft size={18} /></Link><a className="secondary-action call-action" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={18} /> اتصل بنا {companyPhones[0]}</a><a className="secondary-action" href={`mailto:${companyEmail}`}>اطلب معاينة</a></div>
+          <div className="hero-actions"><Link className="primary-action" to="/services">شاهد الخدمات<ArrowLeft size={18} /></Link><a className="secondary-action call-action" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={18} /> اتصل بنا {companyPhones[0]}</a><Link className="secondary-action" to="/quote">اطلب معاينة</Link></div>
         </motion.div>
         <motion.div className="hero-media" style={{ y }}>
           <div className="hero-image-slider">{heroImages.map((src, index) => <img key={src} src={src} alt="أعمال مصاعد وصيانة" style={{ animationDelay: `${index * 4}s` }} />)}<div className="hero-image-overlay"><strong>Installation • Maintenance • Modernization</strong><span>24/7 Technical Support</span></div></div>
@@ -313,7 +315,7 @@ function HomePage() {
       <MotionSection className="section project-section"><div className="section-heading"><span className="eyebrow">أنواع المشاريع</span><h2>نخدم المباني التي تحتاج مصاعد آمنة واعتمادية يومية.</h2></div><div className="project-grid">{projectTypes.map((item) => <article key={item.title}><img src={item.image} alt={item.title} /><span>{item.title}</span></article>)}</div></MotionSection>
       <MotionSection className="section testimonials-section"><div className="section-heading"><span className="eyebrow">آراء العملاء</span><h2>تجربة خدمة واضحة من أول معاينة حتى ما بعد التسليم.</h2></div><div className="testimonial-marquee"><div className="testimonial-track">{[...testimonials, ...testimonials].map(([name, text, score], index) => <article key={`${name}-${index}`}><RatingStars score={score} /><strong>{name}</strong><p>{text}</p></article>)}</div></div></MotionSection>
       <MotionSection className="section experience-years-section"><div className="years-badge"><strong>30</strong><span>سنة خبرة</span></div><div><span className="eyebrow">خبرتنا</span><h2>أكثر من ثلاثين عامًا في خدمة المصاعد والصيانة الميدانية.</h2><p>خبرة طويلة في تركيب وصيانة وتحديث المصاعد للمنازل والمباني التجارية، مع فهم عملي لاحتياجات العملاء واشتراطات السلامة.</p></div><div className="years-list"><span>تركيب وصيانة مصاعد</span><span>خدمة ما بعد البيع</span><span>عقود صيانة سنوية</span></div></MotionSection>
-      <MotionSection className="section quote-section"><div className="section-heading"><span className="eyebrow">طلب عرض سعر</span><h2>أرسل تفاصيل مشروعك وسنقترح الحل المناسب.</h2></div><div className='form'><QuoteForm /></div></MotionSection>
+      <MotionSection className="section quote-section" id="quote"><div className="section-heading"><span className="eyebrow">طلب عرض سعر</span><h2>أرسل تفاصيل مشروعك وسنقترح الحل المناسب.</h2></div><div className='form'><QuoteForm phone={companyPhones[0]} /></div></MotionSection>
     </AnimatedPage>
   );
 }
@@ -322,8 +324,21 @@ function ProductsPreview() {
   return <MotionSection className="section products-section"><div className="section-heading"><span className="eyebrow">منتجاتنا</span><h2>مصاعد عملية وآمنة تناسب المنازل والمباني التجارية والصحية.</h2><p>نوفّر حلولًا تجمع بين التصميم العصري والسلامة والأداء العملي.</p></div><div className="product-grid">{products.map((product) => <article key={product.title}><img src={product.image} alt={product.title} /><h3>{product.title}</h3><p>{product.text}</p><Link to={`/products/${product.slug}`}>تفاصيل المنتج</Link></article>)}</div></MotionSection>;
 }
 
-function QuoteForm() {
-  return <form className="quote-form"><label>الاسم بالكامل<input type="text" placeholder="اكتب اسمك" /></label><label>رقم الهاتف<input type="tel" placeholder="05xxxxxxxx" /></label><label>نوع الخدمة<select defaultValue=""><option value="" disabled>اختر الخدمة</option><option>تركيب</option><option>صيانة</option><option>تحديث</option><option>قطع غيار</option></select></label><label>نوع المصعد<select defaultValue=""><option value="" disabled>اختر النوع</option><option>منزلي</option><option>أفراد</option><option>خارجي</option><option>مستشفى</option></select></label><label>المدينة<input type="text" placeholder="مثال: مكة المكرمة" /></label><label className="wide">ملاحظات<textarea placeholder="اكتب عدد الأدوار أو نوع المبنى أو وصف المشكلة"></textarea></label><button type="button">إرسال الطلب</button></form>;
+
+const productElevatorType: Record<string, string> = {
+  'home-elevators': 'home',
+  'passenger-elevators': 'passenger',
+  'outdoor-elevators': 'outdoor',
+  'hospital-elevators': 'hospital',
+};
+const LEAD_SERVICES: LeadService[] = ['installation', 'maintenance', 'modernization', 'parts', 'consultation'];
+const LEAD_SOURCES: LeadSource[] = ['quote_form', 'product_page', 'contact_page'];
+
+function QuotePage() {
+  const [params] = useSearchParams();
+  const service = params.get('service') as LeadService | null;
+  const source = params.get('source') as LeadSource | null;
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">طلب عرض سعر</span><h1>أرسل تفاصيل مشروعك، ونتواصل معك.</h1><p>نراجع طلبك ونتصل بك لتحديد موعد المعاينة واقتراح المصعد المناسب لمبناك.</p></section><section className="section quote-section quote-page-section"><div className="form"><QuoteForm phone={companyPhones[0]} source={source && LEAD_SOURCES.includes(source) ? source : 'quote_form'} defaultService={service && LEAD_SERVICES.includes(service) ? service : 'installation'} defaultElevatorType={params.get('type') ?? ''} /></div></section></main></AnimatedPage>;
 }
 
 function ExperiencePage() {
@@ -335,7 +350,7 @@ function ExperiencePage() {
 function ProductDetailsPage() {
   const { slug } = useParams();
   const product = products.find((item) => item.slug === slug) || products[0];
-  return <AnimatedPage><main className="page"><section className="page-hero compact product-detail-hero"><span className="eyebrow">تفاصيل المنتج</span><h1>{product.title}</h1><p>{product.text}</p></section><motion.section className="product-detail-layout" variants={fadeFromLeft} initial="hidden" animate="visible" transition={pageTransition}><div className="product-detail-panel"><img className="product-detail-image" src={product.image} alt={product.title} /><h2>ماذا يشمل الحل؟</h2><div className="modernization-list">{product.details.map((item) => <span key={item}>{item}</span>)}</div></div><aside className="product-detail-aside"><h2>طلب عرض سعر</h2><p>أرسل نوع المبنى وعدد الأدوار والمدينة، وسيتم اقتراح الحل المناسب.</p><a className="primary-action" href={`mailto:${companyEmail}`}>طلب معاينة</a></aside></motion.section></main></AnimatedPage>;
+  return <AnimatedPage><main className="page"><section className="page-hero compact product-detail-hero"><span className="eyebrow">تفاصيل المنتج</span><h1>{product.title}</h1><p>{product.text}</p></section><motion.section className="product-detail-layout" variants={fadeFromLeft} initial="hidden" animate="visible" transition={pageTransition}><div className="product-detail-panel"><img className="product-detail-image" src={product.image} alt={product.title} /><h2>ماذا يشمل الحل؟</h2><div className="modernization-list">{product.details.map((item) => <span key={item}>{item}</span>)}</div></div><aside className="product-detail-aside"><h2>طلب عرض سعر</h2><p>أرسل نوع المبنى وعدد الأدوار والمدينة، وسيتم اقتراح الحل المناسب.</p><Link className="primary-action" to={`/quote?type=${productElevatorType[product.slug] ?? ''}&source=product_page`}>طلب معاينة</Link></aside></motion.section></main></AnimatedPage>;
 }
 
 function ServicesPage() {
@@ -447,7 +462,7 @@ function AboutPage() {
 }
 
 function ContactPage() {
-  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">تواصل معنا</span><h1>تواصل للمعاينة أو الصيانة أو قطع الغيار.</h1><p>يمكن التواصل مع {companyName} لخدمات تركيب المصاعد وعقود الصيانة السنوية والتحديث وقطع الغيار.</p></section><PageMotion title="contact movement" /><motion.section className="contact-grid" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><article><MessageCircle /><h2>البريد التجاري</h2><p><a href={`mailto:${companyEmail}`}>{companyEmail}</a></p></article><article><Building2 /><h2>الموقع</h2><p>{companyAddress}</p></article><article><Phone /><h2>الجوال</h2><p>{companyPhones.join(' - ')}</p></article><article><Wrench /><h2>نطاق الخدمة</h2><p>تركيب، صيانة، تحديث، فحص سلامة، عقود AMC، وقطع غيار مصاعد.</p></article></motion.section><section className="company-info-strip"><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><span>{companyBrand}</span></section><MotionSection className="section branches-section"><div className="section-heading"><span className="eyebrow">فروع الخدمة</span><h2>خدمة تركيب وصيانة في عدة مدن.</h2></div><div className="branches-grid">{branches.map(([city, address, phone]) => <article key={city}><h3>{city}</h3><p>{address} - {phone}</p></article>)}</div></MotionSection></main></AnimatedPage>;
+  return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">تواصل معنا</span><h1>تواصل للمعاينة أو الصيانة أو قطع الغيار.</h1><p>يمكن التواصل مع {companyName} لخدمات تركيب المصاعد وعقود الصيانة السنوية والتحديث وقطع الغيار.</p></section><PageMotion title="contact movement" /><motion.section className="contact-grid" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><article><MessageCircle /><h2>البريد التجاري</h2><p><a href={`mailto:${companyEmail}`}>{companyEmail}</a></p></article><article><Building2 /><h2>الموقع</h2><p>{companyAddress}</p></article><article><Phone /><h2>الجوال</h2><p>{companyPhones.join(' - ')}</p></article><article><Wrench /><h2>نطاق الخدمة</h2><p>تركيب، صيانة، تحديث، فحص سلامة، عقود AMC، وقطع غيار مصاعد.</p></article></motion.section><section className="company-info-strip"><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><span>{companyBrand}</span></section><MotionSection className="section quote-section" id="quote"><div className="section-heading"><span className="eyebrow">أرسل طلبك</span><h2>اكتب تفاصيل طلبك وسنتصل بك.</h2></div><div className='form'><QuoteForm phone={companyPhones[0]} source="contact_page" /></div></MotionSection><MotionSection className="section branches-section"><div className="section-heading"><span className="eyebrow">فروع الخدمة</span><h2>خدمة تركيب وصيانة في عدة مدن.</h2></div><div className="branches-grid">{branches.map(([city, address, phone]) => <article key={city}><h3>{city}</h3><p>{address} - {phone}</p></article>)}</div></MotionSection></main></AnimatedPage>;
 }
 
 function PrivacyPage() {
@@ -532,6 +547,7 @@ export default function App() {
         <Route path="/branches" element={<BranchesPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/quote" element={<QuotePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/data-deletion" element={<DataDeletionPage />} />

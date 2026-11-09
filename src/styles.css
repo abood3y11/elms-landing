@@ -1793,3 +1793,177 @@ h3 {
     font-size: 2.45rem;
   }
 }
+
+
+/* ------------------------------------------------------------------ */
+/* Quote form: errors, consent, honeypot, success (طلبات الموقع)        */
+/* ------------------------------------------------------------------ */
+.quote-form {
+  width: min(880px, 100%);
+}
+
+.quote-form input:focus-visible,
+.quote-form select:focus-visible,
+.quote-form textarea:focus-visible,
+.quote-form button:focus-visible,
+.quote-success a:focus-visible,
+.quote-success button:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.45);
+  outline-offset: 2px;
+}
+
+.quote-form [aria-invalid='true'] {
+  border-color: #b42318;
+  background: #fff7f6;
+}
+
+.quote-form .field-error {
+  color: #b42318;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.quote-form button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.quote-form button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--mint-dark);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.quote-form button:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.quote-form .consent-label {
+  font-weight: 600;
+}
+
+.quote-form .consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.quote-form .consent-row input {
+  width: 22px;
+  min-height: 22px;
+  height: 22px;
+  margin-block-start: 3px;
+  flex: 0 0 auto;
+  accent-color: var(--mint);
+}
+
+.quote-form .consent-row a {
+  color: var(--mint);
+  text-decoration: underline;
+}
+
+.quote-form .hp-field {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.quote-form .form-failure {
+  padding: 14px 16px;
+  border: 1px solid #f3c7c2;
+  border-radius: 8px;
+  background: #fff7f6;
+  color: #7a271a;
+  font-weight: 700;
+}
+
+.quote-form .form-failure div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-block-start: 8px;
+}
+
+.quote-form .form-failure a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mint-dark);
+}
+
+.quote-form .form-reassurance {
+  color: var(--muted);
+  text-align: center;
+}
+
+.spin {
+  animation: quote-spin 0.9s linear infinite;
+}
+
+@keyframes quote-spin {
+  to { transform: rotate(360deg); }
+}
+
+.quote-success {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  width: min(640px, 100%);
+  padding: 40px 24px;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(217, 154, 36, 0.12)),
+    #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.quote-success > svg {
+  color: var(--mint);
+}
+
+.quote-success h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.quote-reference {
+  padding: 10px 20px;
+  border: 2px dashed var(--mint);
+  border-radius: 8px;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+  color: var(--mint-dark);
+  background: #ffffff;
+}
+
+.quote-success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-block-start: 8px;
+}
+
+.quote-success-actions .secondary-action {
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.quote-page-section {
+  padding-block-start: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin { animation: none; }
+  .quote-form button:hover:not(:disabled) { transform: none; }
+}
