@@ -1,4 +1,4 @@
-import { Link, NavLink, Route, Routes, useParams } from 'react-router-dom';
+import { Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import {
   Activity,
   ArrowLeft,
@@ -31,6 +31,7 @@ const ElevatorScene = lazy(() => import('./components/ElevatorScene'));
 const RailElevatorScene = lazy(() => import('./components/RailElevatorScene'));
 const BackgroundElevatorScene = lazy(() => import('./components/BackgroundElevatorScene'));
 const AnimeElevatorShowcase = lazy(() => import('./components/AnimeElevatorShowcase'));
+const ConfiguratorPage = lazy(() => import('./configurator/ConfiguratorPage'));
 
 const companyName = 'مؤسسة حسين سفر النفيعي للمصاعد';
 const companyBrand = 'HENS LINE';
@@ -185,7 +186,7 @@ const timeline = [
 
 function Header() {
   const [open, setOpen] = useState(false);
-  const navItems = [['الرئيسية', '/'], ['من نحن', '/about'], ['الخدمات', '/services'], ['المشاريع', '/projects'], ['عقود الصيانة', '/maintenance-contracts'], ['المنتجات', '/products'], ['قطع غيار', '/spare-parts'], ['عملاؤنا', '/customers'], ['الميديا', '/media'], ['تواصل معنا', '/contact']];
+  const navItems = [['الرئيسية', '/'], ['صمّم مصعدك', '/configure'], ['من نحن', '/about'], ['الخدمات', '/services'], ['المشاريع', '/projects'], ['عقود الصيانة', '/maintenance-contracts'], ['المنتجات', '/products'], ['قطع غيار', '/spare-parts'], ['عملاؤنا', '/customers'], ['الميديا', '/media'], ['تواصل معنا', '/contact']];
   return (
     <header className="site-header">
       <Link className="brand" to="/"><img src="/assets/hens-line-logo.svg" alt={companyName} /><span className="brand-text"><strong>{companyBrand}</strong><small>{companyName}</small></span></Link>
@@ -299,7 +300,7 @@ function HomePage() {
           <span className="eyebrow"><Sparkles size={16} />مؤسسة تركيب وصيانة مصاعد</span>
           <h1>مصاعد آمنة للفلل والمباني التجارية.</h1>
           <p>{companyName} تقدم تركيب المصاعد، الصيانة الوقائية، تحديث المصاعد القديمة، قطع الغيار، وعقود الخدمة السنوية مع دعم طوارئ.</p>
-          <div className="hero-actions"><Link className="primary-action" to="/services">شاهد الخدمات<ArrowLeft size={18} /></Link><a className="secondary-action call-action" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={18} /> اتصل بنا {companyPhones[0]}</a><a className="secondary-action" href={`mailto:${companyEmail}`}>اطلب معاينة</a></div>
+          <div className="hero-actions"><Link className="primary-action" to="/configure">صمّم مصعدك بنفسك<ArrowLeft size={18} /></Link><Link className="secondary-action" to="/services">شاهد الخدمات</Link><a className="secondary-action call-action" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={18} /> اتصل بنا {companyPhones[0]}</a><a className="secondary-action" href={`mailto:${companyEmail}`}>اطلب معاينة</a></div>
         </motion.div>
         <motion.div className="hero-media" style={{ y }}>
           <div className="hero-image-slider">{heroImages.map((src, index) => <img key={src} src={src} alt="أعمال مصاعد وصيانة" style={{ animationDelay: `${index * 4}s` }} />)}<div className="hero-image-overlay"><strong>Installation • Maintenance • Modernization</strong><span>24/7 Technical Support</span></div></div>
@@ -335,7 +336,7 @@ function ExperiencePage() {
 function ProductDetailsPage() {
   const { slug } = useParams();
   const product = products.find((item) => item.slug === slug) || products[0];
-  return <AnimatedPage><main className="page"><section className="page-hero compact product-detail-hero"><span className="eyebrow">تفاصيل المنتج</span><h1>{product.title}</h1><p>{product.text}</p></section><motion.section className="product-detail-layout" variants={fadeFromLeft} initial="hidden" animate="visible" transition={pageTransition}><div className="product-detail-panel"><img className="product-detail-image" src={product.image} alt={product.title} /><h2>ماذا يشمل الحل؟</h2><div className="modernization-list">{product.details.map((item) => <span key={item}>{item}</span>)}</div></div><aside className="product-detail-aside"><h2>طلب عرض سعر</h2><p>أرسل نوع المبنى وعدد الأدوار والمدينة، وسيتم اقتراح الحل المناسب.</p><a className="primary-action" href={`mailto:${companyEmail}`}>طلب معاينة</a></aside></motion.section></main></AnimatedPage>;
+  return <AnimatedPage><main className="page"><section className="page-hero compact product-detail-hero"><span className="eyebrow">تفاصيل المنتج</span><h1>{product.title}</h1><p>{product.text}</p></section><motion.section className="product-detail-layout" variants={fadeFromLeft} initial="hidden" animate="visible" transition={pageTransition}><div className="product-detail-panel"><img className="product-detail-image" src={product.image} alt={product.title} /><h2>ماذا يشمل الحل؟</h2><div className="modernization-list">{product.details.map((item) => <span key={item}>{item}</span>)}</div></div><aside className="product-detail-aside"><h2>طلب عرض سعر</h2><p>أرسل نوع المبنى وعدد الأدوار والمدينة، وسيتم اقتراح الحل المناسب.</p><Link className="primary-action" to="/configure">صمّم الكابينة واطلب السعر</Link><a className="secondary-action" href={`mailto:${companyEmail}`}>طلب معاينة</a></aside></motion.section></main></AnimatedPage>;
 }
 
 function ServicesPage() {
@@ -513,12 +514,16 @@ function Footer() {
 }
 
 export default function App() {
+  const { pathname } = useLocation();
+  // The designer runs its own WebGL scene; skip the decorative background one there.
+  const designer = pathname.startsWith('/configure');
   return (
     <div className="app-shell">
-      <div className="background-3d" aria-hidden="true"><Suspense fallback={null}><BackgroundElevatorScene /></Suspense></div>
+      {!designer && <div className="background-3d" aria-hidden="true"><Suspense fallback={null}><BackgroundElevatorScene /></Suspense></div>}
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/configure" element={<Suspense fallback={<main className="page"><p>جاري تحميل المصمّم…</p></main>}><ConfiguratorPage /></Suspense>} />
         <Route path="/experience" element={<ExperiencePage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
