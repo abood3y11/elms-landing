@@ -1,4 +1,4 @@
-import { Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
+import { Link, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import {
   Activity,
   ArrowLeft,
@@ -12,7 +12,6 @@ import {
   Image as ImageIcon,
   LayoutDashboard,
   MapPin,
-  Menu,
   MessageCircle,
   Newspaper,
   Phone,
@@ -20,7 +19,6 @@ import {
   Sparkles,
   Star,
   Wrench,
-  X,
   Zap,
 } from 'lucide-react';
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
@@ -33,13 +31,8 @@ const BackgroundElevatorScene = lazy(() => import('./components/BackgroundElevat
 const AnimeElevatorShowcase = lazy(() => import('./components/AnimeElevatorShowcase'));
 const ConfiguratorPage = lazy(() => import('./configurator/ConfiguratorPage'));
 
-const companyName = 'مؤسسة حسين سفر النفيعي للمصاعد';
-const companyBrand = 'HENS LINE';
-const companyEmail = 'elevatorsystem@avix-net.com';
-const companyVat = '300385366700003';
-const companyCr = '4031021948';
-const companyPhones = ['0571207000'];
-const companyAddress = 'مكة المكرمة - شارع المنصور';
+import { companyAddress, companyBrand, companyCr, companyEmail, companyName, companyPhones, companyVat } from './site';
+import { SiteFooter, SiteHeader } from './layout/SiteChrome';
 
 const pageTransition: Transition = { duration: 0.58, ease: 'easeOut' };
 const fadeFromRight = { hidden: { opacity: 0, x: 54 }, visible: { opacity: 1, x: 0 } };
@@ -183,22 +176,6 @@ const timeline = [
   { icon: <Wrench />, title: 'التركيب والاختبار', text: 'تنفيذ الأعمال الميكانيكية والكهربائية واختبار التشغيل.' },
   { icon: <ShieldCheck />, title: 'التسليم والصيانة', text: 'تسليم المشروع مع عقد صيانة وجدول زيارات وتوصيات فنية.' },
 ];
-
-function Header() {
-  const [open, setOpen] = useState(false);
-  const navItems = [['الرئيسية', '/'], ['صمّم مصعدك', '/configure'], ['من نحن', '/about'], ['الخدمات', '/services'], ['المشاريع', '/projects'], ['عقود الصيانة', '/maintenance-contracts'], ['المنتجات', '/products'], ['قطع غيار', '/spare-parts'], ['عملاؤنا', '/customers'], ['الميديا', '/media'], ['تواصل معنا', '/contact']];
-  return (
-    <header className="site-header">
-      <Link className="brand" to="/"><img src="/assets/hens-line-logo.svg" alt={companyName} /><span className="brand-text"><strong>{companyBrand}</strong><small>{companyName}</small></span></Link>
-      <button className="menu-button" onClick={() => setOpen((value) => !value)} aria-label="فتح القائمة">{open ? <X /> : <Menu />}</button>
-      <nav className={open ? 'nav nav-open' : 'nav'}>
-        {navItems.map(([label, path]) => <NavLink key={path} to={path} onClick={() => setOpen(false)}>{label}</NavLink>)}
-        <a className="nav-cta nav-call" href={`tel:+966${companyPhones[0].slice(1)}`}><Phone size={16} /> اتصل بنا</a>
-        <a className="nav-cta" href={`mailto:${companyEmail}`}>اطلب معاينة</a>
-      </nav>
-    </header>
-  );
-}
 
 function RatingStars({ score }: { score: string }) {
   return <div className="rating-stars">{Array.from({ length: 5 }).map((_, index) => <Star key={index} size={17} fill="currentColor" />)}<span>{score}</span></div>;
@@ -509,10 +486,6 @@ function FacebookCallbackPage() {
   return <AnimatedPage><main className="page"><section className="page-hero compact"><span className="eyebrow">OAuth Callback</span><h1>تم تجهيز رابط إعادة توجيه تسجيل الدخول.</h1><p>هذا الرابط مخصص لاستقبال نتيجة تسجيل الدخول عبر Facebook OAuth وربطه بخدمات العملاء عند تفعيل التكامل.</p></section><motion.section className="legal" variants={fadeFromLeft} initial="hidden" animate="visible" transition={{ ...pageTransition, delay: 0.08 }}><h2>رابط callback المعتمد</h2><p>استخدم هذا الرابط داخل إعدادات Meta ضمن Valid OAuth Redirect URIs:</p><p><strong>https://hensline.com/auth/facebook/callback</strong></p><h2>ملاحظة أمان</h2><p>يتم استخدام هذا المسار فقط لتسجيل الدخول المصرح به، ولا يستخدم لإرسال رسائل تسويقية أو معالجة بيانات خارج نطاق موافقة المستخدم.</p></motion.section></main></AnimatedPage>;
 }
 
-function Footer() {
-  return <footer className="footer"><span>{companyName} - {companyBrand}</span><span>{companyAddress}</span><span>جوال: {companyPhones.join(' / ')}</span><span>الرقم الضريبي: {companyVat}</span><span>س.ت: {companyCr}</span><Link to="/privacy">سياسة الخصوصية</Link><Link to="/terms">شروط الاستخدام</Link><Link to="/data-deletion">حذف البيانات</Link></footer>;
-}
-
 export default function App() {
   const { pathname } = useLocation();
   // The designer runs its own WebGL scene; skip the decorative background one there.
@@ -520,7 +493,7 @@ export default function App() {
   return (
     <div className="app-shell">
       {!designer && <div className="background-3d" aria-hidden="true"><Suspense fallback={null}><BackgroundElevatorScene /></Suspense></div>}
-      <Header />
+      <SiteHeader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/configure" element={<Suspense fallback={<main className="page"><p>جاري تحميل المصمّم…</p></main>}><ConfiguratorPage /></Suspense>} />
@@ -542,7 +515,7 @@ export default function App() {
         <Route path="/data-deletion" element={<DataDeletionPage />} />
         <Route path="/auth/facebook/callback" element={<FacebookCallbackPage />} />
       </Routes>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }

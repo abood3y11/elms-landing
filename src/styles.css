@@ -75,7 +75,7 @@ textarea {
 .home-scroll-rail {
   position: fixed;
   left: 18px;
-  top: 92px;
+  top: 112px;
   bottom: 28px;
   z-index: 40;
   width: 156px;

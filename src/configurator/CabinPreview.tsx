@@ -331,7 +331,7 @@ function viewConfig(view: ViewId, design: Design): ViewConfig {
     case 'interior':
       return { position: [0, 1.35, 0.62], target: [0, 1.35, 0.6], fov: 82, orbit: { minDistance: 0.02, maxDistance: 0.02, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 0.5, maxPolar: 2.4, zoom: false, rotateSpeed: -0.35 } };
     case 'landing':
-      return { position: [0, 1.25, 7.4], target: [0, 1.15, 0], fov: 40, orbit: { minDistance: 4, maxDistance: 9.5, minAzimuth: -0.5, maxAzimuth: 0.5, minPolar: 1.1, maxPolar: 1.75, zoom: true, rotateSpeed: 0.6 } };
+      return { position: [0, 1.25, 6.4], target: [0, 1.15, 0], fov: 40, orbit: { minDistance: 4, maxDistance: 9.5, minAzimuth: -0.5, maxAzimuth: 0.5, minPolar: 1.1, maxPolar: 1.75, zoom: true, rotateSpeed: 0.6 } };
     case 'exterior': {
       const mirror = design.entrance === 'side-left' ? -1 : 1;
       return { position: [3.4 * mirror, 2.3, 4.6], target: [0, 1.15, 0], fov: 38, orbit: { minDistance: 4, maxDistance: 8.5, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 0.6, maxPolar: 1.7, zoom: true, rotateSpeed: 0.6 } };
@@ -341,7 +341,7 @@ function viewConfig(view: ViewId, design: Design): ViewConfig {
     case 'controls':
       return { position: [panelX * 0.2, 1.3, 0.1], target: [panelX, 1.2, D / 2], fov: 55, orbit: { minDistance: 0.7, maxDistance: 1.1, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 1.2, maxPolar: 1.9, zoom: true, rotateSpeed: 0.4 } };
     default:
-      return { position: [0, 1.3, 6.8], target: [0, 1.15, 0], fov: 40, orbit: { minDistance: 3.6, maxDistance: 9.5, minAzimuth: -0.5, maxAzimuth: 0.5, minPolar: 1.1, maxPolar: 1.75, zoom: true, rotateSpeed: 0.6 } };
+      return { position: [0, 1.25, 5.6], target: [0, 1.15, 0], fov: 40, orbit: { minDistance: 3.6, maxDistance: 9.5, minAzimuth: -0.5, maxAzimuth: 0.5, minPolar: 1.1, maxPolar: 1.75, zoom: true, rotateSpeed: 0.6 } };
   }
 }
 

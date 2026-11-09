@@ -1,10 +1,12 @@
 /* Cabin designer (/configure). Logical properties only: the page is RTL first. */
 
 .cfg-page {
+  --cfg-gradient: linear-gradient(135deg, #0f766e 0%, #0a5c56 100%);
+  --cfg-gold-gradient: linear-gradient(135deg, #f2c46d 0%, #d99a24 100%);
   --cfg-card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   --cfg-hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --cfg-gradient: linear-gradient(135deg, var(--mint) 0%, #0a5c56 100%);
-  padding-block-end: 0;
+  --cfg-radius: 16px;
+  padding: 26px clamp(16px, 4vw, 70px) 8px;
 }
 
 .sr-only {
@@ -21,117 +23,190 @@
   outline-offset: 2px;
 }
 
-.cfg-head {
-  max-inline-size: 980px;
-  margin-block-end: 24px;
-  scroll-margin-block-start: 96px;
+[dir='ltr'] .cfg-flip {
+  transform: scaleX(-1);
 }
 
-.cfg-head h1 {
-  font-size: clamp(1.65rem, 3.2vw, 2.6rem);
-  line-height: 1.18;
-  margin-block-end: 10px;
+.cfg-kicker {
+  display: inline-block;
+  color: var(--mint);
+  font-size: 0.8rem;
+  font-weight: 900;
 }
 
-.cfg-head p {
+.cfg-intro {
+  max-inline-size: 860px;
+  margin-block-end: 18px;
+  scroll-margin-block-start: calc(var(--sh-height, 68px) + 12px);
+}
+
+.cfg-intro h1 {
+  margin-block: 6px 8px;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1.2;
+}
+
+.cfg-intro p {
+  margin: 0;
   color: var(--muted);
-  font-size: 1.05rem;
-  max-inline-size: 720px;
+  font-size: 1.02rem;
 }
+
+/* ---------- shell ---------- */
+
+.cfg-shell {
+  display: grid;
+  grid-template-columns: minmax(360px, 460px) minmax(0, 1fr);
+  grid-template-areas: 'panel stage';
+  gap: 20px;
+  block-size: clamp(620px, calc(100dvh - var(--sh-height, 68px) - 36px), 880px);
+}
+
+.cfg-appbar {
+  display: none;
+}
+
+.cfg-panel {
+  grid-area: panel;
+  min-inline-size: 0;
+  min-block-size: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--cfg-radius);
+  background: #fff;
+  box-shadow: var(--cfg-card-shadow);
+}
+
+.cfg-panel-body {
+  flex: 1;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px;
+  scrollbar-width: thin;
+}
+
+/* ---------- stepper ---------- */
 
 .cfg-stepper {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin: 22px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
+  border-block-end: 1px solid var(--line);
+  background: #fbfcfc;
 }
 
 .cfg-stepper button {
+  position: relative;
   inline-size: 100%;
-  min-block-size: 48px;
+  min-block-size: 64px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: 0;
+  background: none;
   color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .cfg-stepper button:disabled {
   cursor: default;
 }
 
+.cfg-stepper button::after {
+  content: '';
+  position: absolute;
+  inset-inline: 14%;
+  inset-block-end: -1px;
+  block-size: 3px;
+  border-radius: 3px 3px 0 0;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
 .cfg-step-num {
   inline-size: 28px;
   block-size: 28px;
-  flex: none;
   display: grid;
   place-items: center;
+  border: 1.5px solid var(--line);
   border-radius: 999px;
-  background: var(--soft);
-  color: var(--mint-dark);
-  font-size: 0.9rem;
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
 }
 
 .cfg-stepper .is-current button {
-  border-color: transparent;
+  color: var(--navy);
+}
+
+.cfg-stepper .is-current button::after {
   background: var(--cfg-gradient);
-  color: #fff;
-  box-shadow: var(--cfg-card-shadow);
 }
 
 .cfg-stepper .is-current .cfg-step-num {
-  background: rgba(255, 255, 255, 0.22);
+  border-color: transparent;
+  background: var(--cfg-gradient);
   color: #fff;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.3);
 }
 
 .cfg-stepper .is-done .cfg-step-num {
-  background: var(--mint);
-  color: #fff;
+  border-color: var(--mint);
+  background: var(--soft);
+  color: var(--mint);
 }
 
-.cfg-layout {
-  display: grid;
-  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
+.cfg-stepper .is-done button {
+  color: var(--mint-dark);
 }
 
-.cfg-panel {
-  min-inline-size: 0;
-  padding: 22px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: var(--cfg-card-shadow);
+/* ---------- step content ---------- */
+
+.cfg-step-head {
+  margin-block-end: 18px;
 }
 
-.cfg-step-of {
-  margin-block-end: 6px;
+.cfg-step-head h2 {
+  margin-block: 6px 6px;
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  line-height: 1.25;
+}
+
+.cfg-step-head p {
+  margin: 0;
   color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
-.cfg-step h2 {
-  margin-block: 18px 10px;
-  font-size: 1.15rem;
+.cfg-label,
+.cfg-field label,
+.cfg-field-label {
+  display: block;
+  margin-block: 0 8px;
+  color: var(--navy);
+  font-size: 0.95rem;
+  font-weight: 900;
 }
 
-.cfg-step h2:first-child {
+.cfg-step h3.cfg-label {
+  margin-block-start: 18px;
+}
+
+.cfg-step h3.cfg-label:first-child {
   margin-block-start: 0;
-}
-
-.cfg-step h3 {
-  margin-block: 18px 10px;
-  font-size: 1rem;
 }
 
 .cfg-regions {
@@ -140,9 +215,10 @@
 }
 
 .cfg-region {
-  min-block-size: 64px;
-  display: grid;
-  gap: 2px;
+  min-block-size: 68px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 12px 14px;
   border: 1.5px solid var(--line);
   border-radius: 12px;
@@ -152,12 +228,45 @@
   transition: all 0.3s ease;
 }
 
-.cfg-region strong {
+.cfg-region-icon {
+  inline-size: 40px;
+  block-size: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--mint);
+}
+
+.cfg-region-text {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+
+.cfg-region-text strong {
   color: var(--navy);
 }
 
-.cfg-region small {
+.cfg-region-text small {
   color: var(--muted);
+}
+
+.cfg-radio {
+  inline-size: 20px;
+  block-size: 20px;
+  flex: none;
+  border: 2px solid #b7c3c9;
+  border-radius: 999px;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.is-selected .cfg-radio {
+  border-color: var(--mint);
+  box-shadow: inset 0 0 0 4px #fff;
+  background: var(--mint);
 }
 
 .cfg-region:hover,
@@ -170,20 +279,19 @@
 .cfg-region.is-selected,
 .cfg-option.is-selected {
   border-color: var(--mint);
-  background: var(--soft);
-  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.18);
+  background: #f2faf8;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+
+.cfg-region.is-selected .cfg-region-icon {
+  background: var(--cfg-gradient);
+  color: #fff;
 }
 
 .cfg-field {
   display: grid;
-  gap: 6px;
-  margin-block-start: 14px;
-}
-
-.cfg-field label {
-  color: var(--navy);
-  font-weight: 800;
-  font-size: 0.95rem;
+  gap: 0;
+  margin-block-start: 16px;
 }
 
 .cfg-field input,
@@ -191,13 +299,24 @@
 .cfg-field textarea,
 .cfg-views-select select {
   inline-size: 100%;
-  min-block-size: 46px;
+  min-block-size: 48px;
   padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
   background: #fff;
   color: var(--ink);
   font: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.cfg-field input + input {
+  margin-block-start: 8px;
+}
+
+.cfg-field input:focus,
+.cfg-field select:focus,
+.cfg-field textarea:focus {
+  border-color: var(--mint);
 }
 
 .cfg-field textarea {
@@ -208,38 +327,117 @@
   border-color: #c2410c;
 }
 
+.cfg-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cfg-counter {
+  min-block-size: 48px;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.cfg-counter button {
+  block-size: 100%;
+  min-block-size: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--soft);
+  color: var(--mint-dark);
+  cursor: pointer;
+}
+
+.cfg-counter button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cfg-counter output {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--navy);
+}
+
 .cfg-error {
   margin: 6px 0 0;
   color: #b42318;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 800;
 }
 
 .cfg-note {
-  margin-block: 10px 0;
+  margin-block: 12px 0;
   padding: 10px 12px;
+  border-inline-start: 3px solid var(--gold);
   border-radius: 8px;
   background: #fff8e8;
   color: #6b4f12;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+.cfg-hint-text {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.cfg-current {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.cfg-current strong {
+  color: var(--navy);
+}
+
+.cfg-current code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--mint-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .cfg-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  margin-block-start: 12px;
 }
 
 .cfg-chips button,
 .cfg-tabs button {
-  min-block-size: 44px;
-  padding: 8px 14px;
-  border: 1px solid var(--line);
+  min-block-size: 40px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--line);
   border-radius: 999px;
   background: #fff;
   color: var(--mint-dark);
+  font: inherit;
+  font-size: 0.86rem;
   font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.3s ease;
 }
 
@@ -248,56 +446,32 @@
   border-color: transparent;
   background: var(--cfg-gradient);
   color: #fff;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.25);
 }
 
-.cfg-chips + .cfg-search {
-  margin-block-start: 12px;
-}
-
-.cfg-stepper-input {
-  display: inline-flex;
-  align-items: center;
+.cfg-tabs {
+  display: flex;
   gap: 6px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
+  margin-inline: -20px;
+  margin-block-end: 8px;
+  padding: 2px 20px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.cfg-stepper-input button {
-  inline-size: 44px;
-  block-size: 44px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 999px;
-  background: var(--soft);
-  color: var(--mint-dark);
-  cursor: pointer;
-}
-
-.cfg-stepper-input button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.cfg-stepper-input output {
-  min-inline-size: 44px;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: var(--navy);
+.cfg-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .cfg-presets {
   margin-block-end: 14px;
-  border: 1px solid var(--line);
+  border: 1px solid #f0dfb8;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(15, 118, 110, 0.06), rgba(217, 154, 36, 0.08));
+  background: linear-gradient(135deg, #fffaf0 0%, #f3faf8 100%);
 }
 
 .cfg-presets summary {
-  min-block-size: 46px;
+  min-block-size: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -308,11 +482,21 @@
   list-style: none;
 }
 
+.cfg-presets summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .cfg-presets summary::-webkit-details-marker {
   display: none;
 }
 
-.cfg-presets[open] summary svg {
+.cfg-presets summary > svg {
+  transition: transform 0.3s ease;
+}
+
+.cfg-presets[open] summary > svg {
   transform: rotate(180deg);
 }
 
@@ -328,44 +512,31 @@
   gap: 6px;
   padding: 6px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 10px;
   background: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
   color: var(--navy);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .cfg-preset img {
   inline-size: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   border-radius: 6px;
-}
-
-.cfg-tabs {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-block-end: 6px;
-  margin-block-end: 10px;
-  scrollbar-width: thin;
-}
-
-.cfg-tabs button {
-  flex: none;
-  font-size: 0.88rem;
 }
 
 .cfg-search {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-block: 10px;
+  margin-block: 12px 4px;
   padding-inline: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
   background: #fff;
   color: var(--muted);
 }
@@ -376,8 +547,8 @@
   min-block-size: 44px;
   border: 0;
   background: transparent;
-  font: inherit;
   color: var(--ink);
+  font: inherit;
 }
 
 .cfg-search input:focus-visible {
@@ -385,12 +556,11 @@
 }
 
 .cfg-search:focus-within {
-  outline: 3px solid var(--gold);
-  outline-offset: 2px;
+  border-color: var(--mint);
 }
 
 .cfg-count {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 800;
   direction: ltr;
   unicode-bidi: isolate;
@@ -400,7 +570,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-block-start: 8px;
+  margin-block-start: 10px;
 }
 
 .cfg-grid-visual {
@@ -415,9 +585,10 @@
   gap: 10px;
   padding: 10px 12px;
   border: 1.5px solid var(--line);
-  border-radius: 8px;
+  border-radius: 12px;
   background: #fff;
   color: var(--navy);
+  font: inherit;
   text-align: start;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -426,12 +597,12 @@
 .cfg-grid-visual .cfg-option {
   flex-direction: column;
   align-items: stretch;
-  padding: 6px;
   gap: 6px;
+  padding: 6px;
 }
 
 .cfg-option:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -443,35 +614,27 @@
 
 .cfg-option-text strong {
   font-size: 0.86rem;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 
 .cfg-option-text small {
   color: var(--muted);
-  font-size: 0.75rem;
-  direction: ltr;
-  text-align: end;
-  unicode-bidi: isolate;
+  font-size: 0.74rem;
 }
 
 .cfg-option-text .cfg-option-reason {
   color: #9a3412;
-  direction: rtl;
-  text-align: start;
-}
-
-.cfg-grid-visual .cfg-option-text small {
-  text-align: start;
 }
 
 .cfg-option-check {
   position: absolute;
-  inset-block-start: 6px;
-  inset-inline-end: 6px;
-  padding: 2px;
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+  padding: 3px;
   border-radius: 999px;
   background: var(--mint);
   color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .cfg-swatch-img,
@@ -479,54 +642,78 @@
   display: block;
   inline-size: 100%;
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: 8px;
   object-fit: cover;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-}
-
-.cfg-grid:not(.cfg-grid-visual) .cfg-swatch-color {
-  inline-size: 26px;
-  flex: none;
-  border-radius: 999px;
 }
 
 .cfg-empty {
   color: var(--muted);
 }
 
+/* ---------- bottom nav inside the panel ---------- */
+
 .cfg-nav {
   display: flex;
-  justify-content: space-between;
   gap: 10px;
-  margin-block-start: 20px;
+  padding: 12px 16px;
+  padding-block-end: max(12px, env(safe-area-inset-bottom));
+  border-block-start: 1px solid var(--line);
+  background: #fff;
 }
 
-.cfg-nav .primary-action,
-.cfg-nav .secondary-action {
-  min-block-size: 48px;
+.cfg-btn {
+  min-block-size: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
   border: 0;
-  cursor: pointer;
+  border-radius: 12px;
   font: inherit;
   font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.cfg-nav .secondary-action {
-  border: 1px solid var(--line);
+.cfg-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--cfg-hover-shadow);
 }
 
-.cfg-nav .primary-action {
-  margin-inline-start: auto;
+.cfg-btn-primary {
+  background: var(--cfg-gradient);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(15, 118, 110, 0.28);
+}
+
+.cfg-btn-ghost {
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--navy);
+}
+
+.cfg-btn-wa {
+  inline-size: 100%;
+  margin-block-start: 10px;
+  background: #1f8f4e;
+  color: #fff;
+}
+
+.cfg-next {
+  flex: 1;
 }
 
 /* ---------- stage ---------- */
 
 .cfg-stage {
-  position: sticky;
-  inset-block-start: 96px;
-  block-size: min(calc(100vh - 120px), 720px);
-  min-block-size: 460px;
+  grid-area: stage;
+  position: relative;
+  min-block-size: 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: var(--cfg-radius);
   background: #eceeeb;
   box-shadow: var(--cfg-card-shadow);
 }
@@ -534,9 +721,7 @@
 .cfg-stage.is-expanded {
   position: fixed;
   inset: 0;
-  z-index: 90;
-  block-size: 100vh;
-  min-block-size: 0;
+  z-index: 130;
   border-radius: 0;
 }
 
@@ -553,7 +738,9 @@
   position: absolute;
   inset: 0;
   display: grid;
-  place-items: center;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
   color: var(--muted);
   font-weight: 800;
 }
@@ -569,72 +756,124 @@
   object-fit: cover;
 }
 
-.cfg-welcome > div {
+.cfg-welcome::after {
+  content: '';
   position: absolute;
-  inset-inline: 16px;
-  inset-block-end: 16px;
-  padding: 18px;
-  border-radius: 12px;
-  background: rgba(16, 35, 49, 0.82);
-  color: #fff;
-  backdrop-filter: blur(8px);
+  inset: 0;
+  background: linear-gradient(0deg, rgba(16, 35, 49, 0.75) 0%, rgba(16, 35, 49, 0.1) 60%);
 }
 
-.cfg-welcome h2 {
+.cfg-welcome-card {
+  position: absolute;
+  inset-inline: 20px;
+  inset-block-end: 20px;
+  z-index: 1;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--cfg-radius);
+  background: rgba(16, 35, 49, 0.72);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.cfg-welcome-card h2 {
   margin-block-end: 6px;
   color: #fff;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
 }
 
-.cfg-welcome p {
+.cfg-welcome-card p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cfg-how {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cfg-how li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cfg-how li span:last-child {
+  display: grid;
+  gap: 2px;
+}
+
+.cfg-how small {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.78rem;
+}
+
+.cfg-how-icon {
+  inline-size: 36px;
+  block-size: 36px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--cfg-gold-gradient);
+  color: var(--navy);
 }
 
 .cfg-views {
   position: absolute;
   inset-block-start: 12px;
-  inset-inline: 12px;
+  inset-inline-start: 12px;
+  inset-inline-end: 64px;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  z-index: 2;
 }
 
 .cfg-views button {
-  min-block-size: 36px;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  min-block-size: 38px;
+  padding: 6px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(255, 255, 255, 0.88);
   color: var(--navy);
-  font-weight: 800;
+  font: inherit;
   font-size: 0.82rem;
+  font-weight: 800;
   cursor: pointer;
   backdrop-filter: blur(6px);
   transition: all 0.3s ease;
 }
 
 .cfg-views button.is-active {
-  background: var(--cfg-gradient);
   border-color: transparent;
+  background: var(--cfg-gradient);
   color: #fff;
 }
 
 .cfg-views-select {
-  display: none;
   position: absolute;
   inset-block-start: 10px;
   inset-inline-start: 10px;
   z-index: 2;
+  display: none;
   align-items: center;
 }
 
 .cfg-views-select select {
-  min-inline-size: 170px;
+  min-inline-size: 160px;
+  min-block-size: 42px;
   padding-inline-end: 34px;
   appearance: none;
   font-weight: 800;
+  box-shadow: var(--cfg-card-shadow);
 }
 
 .cfg-views-select svg {
@@ -645,11 +884,11 @@
 
 .cfg-tools {
   position: absolute;
-  inset-block-end: 40px;
+  inset-block-start: 12px;
   inset-inline-end: 12px;
+  z-index: 2;
   display: grid;
   gap: 6px;
-  z-index: 2;
 }
 
 .cfg-tools button {
@@ -658,59 +897,79 @@
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 999px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.92);
   color: var(--navy);
   box-shadow: var(--cfg-card-shadow);
   cursor: pointer;
 }
 
-.cfg-caption {
+.cfg-stage-bar {
   position: absolute;
-  inset-block-end: 40px;
-  inset-inline-start: 50%;
-  translate: 50% 0;
+  inset-block-end: 14px;
+  inset-inline: 0;
   z-index: 2;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(16, 35, 49, 0.8);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-[dir='ltr'] .cfg-caption {
-  translate: -50% 0;
-}
-
-.cfg-hint {
-  position: absolute;
-  inset-block-end: 40px;
-  inset-inline-start: 12px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 700;
+  display: flex;
+  justify-content: center;
   pointer-events: none;
 }
 
-.cfg-disclaimer {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  z-index: 2;
-  margin: 0;
-  padding: 7px 12px;
-  background: rgba(255, 255, 255, 0.9);
+.cfg-stage-bar > * {
+  pointer-events: auto;
+}
+
+.cfg-stage-bar {
+  gap: 0;
+}
+
+.cfg-hint,
+.cfg-doors {
+  min-block-size: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--navy);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  box-shadow: var(--cfg-card-shadow);
+}
+
+.cfg-hint {
+  border-start-start-radius: 999px;
+  border-end-start-radius: 999px;
   color: var(--muted);
-  font-size: 0.78rem;
+  border-inline-end: 1px solid var(--line);
+}
+
+.cfg-doors {
+  border: 0;
+  border-start-end-radius: 999px;
+  border-end-end-radius: 999px;
+  cursor: pointer;
+}
+
+.cfg-caption {
+  position: absolute;
+  inset-block-start: 62px;
+  inset-inline: 0;
+  z-index: 2;
+  inline-size: fit-content;
+  margin-inline: auto;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(16, 35, 49, 0.82);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.cfg-disclaimer {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
   text-align: center;
 }
 
@@ -721,7 +980,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   border-radius: 12px;
   background: var(--cfg-gradient);
   color: #fff;
@@ -738,19 +997,20 @@
 }
 
 .cfg-location-card button {
-  min-block-size: 40px;
+  min-block-size: 44px;
   padding: 6px 14px;
   border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
   color: #fff;
+  font: inherit;
   font-weight: 800;
   cursor: pointer;
 }
 
 .cfg-summary {
   display: grid;
-  margin: 12px 0;
+  margin: 0 0 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
@@ -761,11 +1021,11 @@
   justify-content: space-between;
   gap: 12px;
   padding: 9px 12px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .cfg-summary div:nth-child(odd) {
-  background: var(--soft);
+  background: #f6faf9;
 }
 
 .cfg-summary dt {
@@ -786,18 +1046,23 @@
   align-items: center;
   gap: 8px;
   padding: 8px 14px;
-  border: 1px dashed var(--mint);
-  border-radius: 8px;
+  border: 1.5px dashed var(--mint);
+  border-radius: 10px;
   background: #fff;
   color: var(--mint-dark);
+  font: inherit;
   font-weight: 800;
   cursor: pointer;
 }
 
 .cfg-form {
-  margin-block-start: 18px;
-  padding-block-start: 6px;
+  margin-block-start: 22px;
+  padding-block-start: 18px;
   border-block-start: 1px solid var(--line);
+}
+
+.cfg-form .cfg-label {
+  margin-block-start: 0;
 }
 
 .cfg-honeypot {
@@ -812,9 +1077,10 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-block-start: 14px;
-  font-size: 0.92rem;
+  margin-block-start: 16px;
   color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .cfg-consent input {
@@ -827,10 +1093,6 @@
 .cfg-submit {
   inline-size: 100%;
   margin-block-start: 16px;
-  border: 0;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 900;
 }
 
 .cfg-submit:disabled {
@@ -842,21 +1104,21 @@
   display: grid;
   justify-items: center;
   gap: 8px;
-  padding: 18px 6px;
+  padding: 26px 6px;
   text-align: center;
 }
 
 .cfg-done > svg {
-  padding: 10px;
+  box-sizing: content-box;
+  padding: 12px;
   border-radius: 999px;
   background: var(--cfg-gradient);
   color: #fff;
-  box-sizing: content-box;
 }
 
 .cfg-done p {
-  color: var(--muted);
   margin: 0;
+  color: var(--muted);
 }
 
 .cfg-done-actions {
@@ -867,52 +1129,14 @@
   margin-block-start: 10px;
 }
 
-.cfg-done-actions button {
-  cursor: pointer;
-  font: inherit;
-}
-
-/* ---------- sticky action bar ---------- */
-
-.cfg-actionbar {
-  position: sticky;
-  inset-block-end: 0;
-  z-index: 30;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-block-start: 24px;
-  margin-inline: calc(-1 * clamp(18px, 4vw, 70px));
-  padding: 12px clamp(18px, 4vw, 70px);
-  border-block-start: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(14px);
-}
-
-.cfg-actionbar button {
-  min-block-size: 48px;
-  padding: 10px 18px;
-  border: 0;
-  border-radius: 8px;
-  font: inherit;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.cfg-wa {
-  background: #1f8f4e;
-  color: #fff;
-  box-shadow: var(--cfg-card-shadow);
-}
-
 .cfg-toast {
   position: fixed;
-  inset-block-end: 90px;
+  inset-block-end: 96px;
   inset-inline: 0;
-  margin-inline: auto;
+  z-index: 140;
   inline-size: fit-content;
   max-inline-size: calc(100vw - 32px);
-  z-index: 100;
+  margin-inline: auto;
   padding: 10px 18px;
   border-radius: 999px;
   background: var(--navy);
@@ -921,9 +1145,11 @@
   box-shadow: var(--cfg-hover-shadow);
 }
 
-@media (max-width: 1020px) {
-  .cfg-layout {
-    grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+/* ---------- responsive ---------- */
+
+@media (max-width: 1100px) {
+  .cfg-shell {
+    grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
   }
 
   .cfg-views {
@@ -933,64 +1159,204 @@
   .cfg-views-select {
     display: inline-flex;
   }
+
+  .cfg-how {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 760px) {
-  .cfg-page.page {
-    padding-block-start: 22px;
+  .cfg-page {
+    padding: 18px 16px 8px;
   }
 
-  .cfg-stepper button {
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px 4px;
-    font-size: 0.78rem;
+  .cfg-intro h1 {
+    font-size: 1.5rem;
   }
 
-  .cfg-layout {
-    grid-template-columns: 1fr;
-    gap: 14px;
+  /* Step 1: ordinary page flow, the continue bar sticks to the bottom. */
+  .cfg-shell {
+    display: block;
+    block-size: auto;
   }
 
-  .cfg-stage {
-    order: -1;
-    inset-block-start: 88px;
-    z-index: 20;
-    block-size: 44vh;
-    min-block-size: 280px;
-  }
-
-  .cfg-layout.step-1 .cfg-stage {
+  .cfg-shell.step-1 .cfg-stage {
     display: none;
   }
 
-  .cfg-panel {
+  .cfg-shell.step-1 .cfg-panel {
+    overflow: visible;
+  }
+
+  .cfg-shell.step-1 .cfg-panel-body {
+    overflow: visible;
     padding: 16px;
   }
 
-  .cfg-grid-visual {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .cfg-shell.step-1 .cfg-nav {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: 5;
+    border-end-start-radius: var(--cfg-radius);
+    border-end-end-radius: var(--cfg-radius);
+  }
+
+  .cfg-stepper button {
+    min-block-size: 58px;
+    font-size: 0.76rem;
+  }
+
+  .cfg-tabs {
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+
+  /* Steps 2-4: a full-screen app above the site header. */
+  .cfg-page.is-app .cfg-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    block-size: 100dvh;
+    background: #fff;
+  }
+
+  .cfg-page.is-app .cfg-appbar {
+    flex: none;
+    block-size: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline: 8px 12px;
+    border-block-end: 1px solid var(--line);
+    background: #fff;
+    color: var(--navy);
+  }
+
+  .cfg-appbar-exit {
+    inline-size: 44px;
+    block-size: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: var(--navy);
+  }
+
+  .cfg-appbar-loc {
+    max-inline-size: 40%;
+    min-block-size: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--soft);
+    color: var(--mint-dark);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .cfg-page.is-app .cfg-stage {
+    flex: none;
+    block-size: 38dvh;
+    min-block-size: 210px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* The form needs the room on the last step. */
+  .cfg-page.is-app .cfg-shell.step-4 .cfg-stage {
+    block-size: 26dvh;
+    min-block-size: 170px;
+  }
+
+  .cfg-page.is-app .cfg-stage.is-expanded {
+    position: fixed;
+    block-size: 100dvh;
+  }
+
+  .cfg-page.is-app .cfg-panel {
+    flex: 1;
+    border: 0;
+    border-radius: 0;
+    box-shadow: 0 -6px 16px rgba(16, 35, 49, 0.08);
+  }
+
+  .cfg-page.is-app .cfg-panel-body {
+    padding: 14px 16px;
+  }
+
+  .cfg-page.is-app .cfg-stepper button {
+    min-block-size: 50px;
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  .cfg-page.is-app .cfg-step-label {
+    white-space: nowrap;
+    font-size: 0.72rem;
+  }
+
+  .cfg-page.is-app .cfg-step-num {
+    inline-size: 22px;
+    block-size: 22px;
+    font-size: 0.72rem;
+  }
+
+  .cfg-page.is-app .cfg-step-head {
+    margin-block-end: 12px;
+  }
+
+  .cfg-page.is-app .cfg-step-head h2 {
+    font-size: 1.15rem;
+  }
+
+  .cfg-page.is-app .cfg-step-head p {
+    font-size: 0.86rem;
   }
 
   .cfg-hint {
     display: none;
   }
 
-  .cfg-tools {
-    inset-block-end: 36px;
+  .cfg-doors {
+    border-radius: 999px;
   }
 
-  .cfg-actionbar {
-    gap: 8px;
-    padding-block: 10px;
+  .cfg-stage-bar {
+    inset-block-end: 10px;
   }
 
-  .cfg-actionbar button {
-    flex: 1;
-    min-block-size: 46px;
-    padding: 8px 10px;
-    font-size: 0.82rem;
-    line-height: 1.25;
+  .cfg-caption {
+    inset-block-start: auto;
+    inset-block-end: 58px;
+  }
+
+  .cfg-welcome-card {
+    inset-inline: 12px;
+    inset-block-end: 12px;
+    padding: 16px;
+  }
+
+  .cfg-disclaimer {
+    padding-block-end: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .cfg-grid-visual {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cfg-step-label {
+    font-size: 0.7rem;
   }
 }
 
