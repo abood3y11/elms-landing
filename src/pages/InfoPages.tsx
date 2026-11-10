@@ -6,7 +6,7 @@ import {
   services, spareParts,
 } from '../content';
 import {
-  companyAddress, companyBrand, companyCr, companyEmail, companyName, companyPhones, companyShortAddress, companyVat, serviceArea, telHref, whatsappHref,
+  companyAddress, companyBrand, companyCr, companyEmail, companyUnifiedNumber, companyName, companyPhones, companyShortAddress, companyVat, serviceArea, telHref, whatsappHref,
 } from '../site';
 import { CardGrid, CheckList, CtaBand, ImageTile, Marquee, PageHero, Section, SectionHead, StepsLine } from '../ui/Blocks';
 import { QuoteForm } from '../ui/QuoteForm';
@@ -189,6 +189,7 @@ export function CustomersPage() {
       </Section>
       <Section tone="soft">
         <div className="info-strip" data-stagger>
+          <span>الرقم الوطني الموحد: {companyUnifiedNumber}</span>
           <span>سجل تجاري: {companyCr}</span>
           <span>الرقم الضريبي: {companyVat}</span>
           <span>الجوال: {companyPhones[0]}</span>
@@ -282,6 +283,7 @@ export function ContactPage() {
       <Section tone="soft">
         <div className="info-strip" data-stagger>
           <span>{companyBrand}</span>
+          <span>الرقم الوطني الموحد: {companyUnifiedNumber}</span>
           <span>س.ت: {companyCr}</span>
           <span>الرقم الضريبي: {companyVat}</span>
           <span>نخدم {serviceArea}</span>

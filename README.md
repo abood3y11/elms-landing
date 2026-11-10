@@ -1,6 +1,6 @@
 # HENS LINE Elevators Landing
 
-Arabic React + Vite landing page for مؤسسة حسين سفر النفيعي للمصاعد.
+Arabic React + Vite landing page for مؤسسة حسين سفر السلاقا النفيعي للمصاعد.
 
 ## Local Development
 

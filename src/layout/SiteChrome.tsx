@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ChevronDown, Clock3, Mail, MapPin, Menu, MessageCircle, Phone, SlidersHorizontal, X } from 'lucide-react';
 import {
-  companyAddress, companyBrand, companyCr, companyShortAddress, companyEmail, companyName, companyPhones, companyVat, footerServices, legalNav, moreNav, primaryNav,
+  companyAddress, companyBrand, companyCr, companyShortAddress, companyUnifiedNumber, companyEmail, companyName, companyPhones, companyVat, footerServices, legalNav, moreNav, primaryNav,
   serviceArea, telHref, whatsappHref,
 } from '../site';
 import './layout.css';
@@ -146,7 +146,7 @@ export function SiteFooter() {
             <img src="/hens-line-logo/svg/hens-line-on-dark-transparent.svg" alt="" />
             <span><strong>{companyBrand}</strong><small>{companyName}</small></span>
           </Link>
-          <p>تركيب وصيانة وتحديث المصاعد وقطع الغيار وعقود الصيانة السنوية للمنازل والمباني التجارية والصحية.</p>
+          <p>{companyBrand} هي العلامة التجارية لـ{companyName}، مؤسسة سعودية متخصصة في تركيب وصيانة وتحديث المصاعد، مقرها مكة المكرمة، المملكة العربية السعودية.</p>
         </div>
         <div className="sf-col">
           <h3>روابط سريعة</h3>
@@ -168,7 +168,7 @@ export function SiteFooter() {
       </div>
       <div className="sf-bottom">
         <span>© {year} {companyName}</span>
-        <span>س.ت: {companyCr} · الرقم الضريبي: {companyVat}</span>
+        <span>الرقم الوطني الموحد: {companyUnifiedNumber} · س.ت: {companyCr} · الرقم الضريبي: {companyVat}</span>
         <nav aria-label="روابط قانونية">{legalNav.map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}</nav>
       </div>
     </footer>

@@ -1,10 +1,12 @@
 // Company facts and navigation shared by every page.
 
-export const companyName = 'مؤسسة حسين سفر النفيعي للمصاعد';
+// Legal name exactly as in the commercial register; Meta business verification matches against it.
+export const companyName = 'مؤسسة حسين سفر السلاقا النفيعي للمصاعد';
 export const companyBrand = 'HENS LINE';
 export const companyEmail = 'info@hensline.com';
 export const companyVat = '300385366700003';
 export const companyCr = '4031021948';
+export const companyUnifiedNumber = '7013891473';
 export const companyPhones = ['0546484040'];
 // Registered business address (commercial register, unified no. 7013891473).
 export const companyAddress = '6554 أبو جعفر الحسيني، حي الخالدية، مكة المكرمة 24232';
