@@ -199,10 +199,60 @@ export default function ConfiguratorPage() {
   const cityRef = useRef<HTMLSelectElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
+  // Phone bottom sheet: drag the handle down to see the cabin full-screen, up to bring the choices back.
+  const [sheet, setSheet] = useState<'open' | 'collapsed'>('open');
+  const drag = useRef<{ startY: number; startH: number; minH: number; maxH: number; moved: boolean } | null>(null);
   const has3d = useMemo(() => (typeof window === 'undefined' ? false : webglAvailable()), []);
   const mobile = useIsMobile();
   // On phones, steps 2-4 become a full-screen app: preview on top, choices below, a fixed bar at the bottom.
   const appMode = mobile && step >= 2;
+
+  function stageBounds() {
+    const shell = shellRef.current;
+    const stageEl = shell?.querySelector<HTMLElement>('.cfg-stage');
+    const appbar = shell?.querySelector<HTMLElement>('.cfg-appbar');
+    const nav = shell?.querySelector<HTMLElement>('.cfg-nav');
+    const handle = shell?.querySelector<HTMLElement>('.cfg-sheet-handle');
+    if (!shell || !stageEl) return null;
+    const total = shell.getBoundingClientRect().height;
+    const chrome = (appbar?.offsetHeight ?? 52) + (nav?.offsetHeight ?? 74) + (handle?.offsetHeight ?? 40);
+    return { current: stageEl.getBoundingClientRect().height, minH: Math.round(total * 0.3), maxH: Math.round(total - chrome) };
+  }
+
+  function onSheetDown(event: React.PointerEvent<HTMLButtonElement>) {
+    const bounds = stageBounds();
+    if (!bounds) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    drag.current = { startY: event.clientY, startH: bounds.current, minH: bounds.minH, maxH: bounds.maxH, moved: false };
+    shellRef.current?.classList.add('is-dragging');
+    shellRef.current?.style.setProperty('--stage-h', `${bounds.current}px`);
+  }
+
+  function onSheetMove(event: React.PointerEvent<HTMLButtonElement>) {
+    const d = drag.current;
+    if (!d) return;
+    const dy = event.clientY - d.startY;
+    if (Math.abs(dy) > 6) d.moved = true;
+    const height = Math.min(d.maxH, Math.max(d.minH, d.startH + dy));
+    shellRef.current?.style.setProperty('--stage-h', `${height}px`);
+  }
+
+  function onSheetUp(event: React.PointerEvent<HTMLButtonElement>) {
+    const d = drag.current;
+    drag.current = null;
+    shellRef.current?.classList.remove('is-dragging');
+    shellRef.current?.style.removeProperty('--stage-h');
+    if (!d) return;
+    if (!d.moved) {
+      // A tap toggles.
+      setSheet((value) => (value === 'open' ? 'collapsed' : 'open'));
+      return;
+    }
+    const final = d.startH + (event.clientY - d.startY);
+    const threshold = sheet === 'open' ? d.startH + 60 : d.startH - 60;
+    setSheet(sheet === 'open' ? (final > threshold ? 'collapsed' : 'open') : (final < threshold ? 'open' : 'collapsed'));
+  }
 
   useEffect(() => {
     if (!toast) return undefined;
@@ -434,7 +484,7 @@ export default function ConfiguratorPage() {
         <p>{t.pageLead}</p>
       </div>
 
-      <div className={`cfg-shell step-${step}`}>
+      <div ref={shellRef} className={`cfg-shell step-${step}${appMode && sheet === 'collapsed' ? ' sheet-collapsed' : ''}`}>
         <div className="cfg-appbar">
           <Link to="/" className="cfg-appbar-exit" aria-label={t.exit}><X size={20} /></Link>
           <strong>{t.designerTitle}</strong>
@@ -446,6 +496,19 @@ export default function ConfiguratorPage() {
         {stage}
 
         <section className="cfg-panel" aria-label={t.steps[step - 1]}>
+          <button
+            type="button"
+            className="cfg-sheet-handle"
+            aria-expanded={sheet === 'open'}
+            aria-label={sheet === 'open' ? t.sheetHide : t.sheetShow}
+            onPointerDown={onSheetDown}
+            onPointerMove={onSheetMove}
+            onPointerUp={onSheetUp}
+            onPointerCancel={onSheetUp}
+          >
+            <span className="cfg-sheet-grip" aria-hidden="true" />
+            <span className="cfg-sheet-text">{sheet === 'open' ? t.sheetHide : t.sheetShow}</span>
+          </button>
           {stepper}
           <div className="cfg-panel-body" ref={bodyRef}>
             {!done && (

@@ -50,6 +50,8 @@ export const t = {
   },
   viewLabel: 'زاوية المعاينة',
   panelHint: 'اضغط على أزرار اللوحة لتجربتها',
+  sheetHide: 'اسحب للأسفل لرؤية الكابينة كاملة',
+  sheetShow: 'اسحب للأعلى لعرض الخيارات',
   dragHint: 'اسحب للاستكشاف',
   openDoors: 'فتح الأبواب',
   closeDoors: 'إغلاق الأبواب',

@@ -1382,3 +1382,92 @@
 @media (prefers-reduced-motion: reduce) {
   .cfg-caption.cfg-caption-hint { animation: none; }
 }
+
+/* ---------- phone bottom sheet ---------- */
+
+.cfg-sheet-handle {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .cfg-page.is-app .cfg-sheet-handle {
+    flex: none;
+    min-block-size: 40px;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 4px;
+    padding: 6px 12px 4px;
+    border: 0;
+    background: #fff;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 800;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .cfg-sheet-grip {
+    inline-size: 44px;
+    block-size: 5px;
+    border-radius: 999px;
+    background: #c9d3d7;
+  }
+
+  .cfg-page.is-app .cfg-panel {
+    border-start-start-radius: 18px;
+    border-start-end-radius: 18px;
+    margin-block-start: -14px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .cfg-page.is-app .cfg-stage {
+    transition: block-size 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .cfg-page.is-app .cfg-shell.is-dragging .cfg-stage {
+    block-size: var(--stage-h) !important;
+    transition: none;
+  }
+
+  .cfg-page.is-app .cfg-shell.is-dragging .cfg-sheet-handle {
+    cursor: grabbing;
+  }
+
+  /* Collapsed: the cabin takes the screen; the sheet keeps its handle and the continue bar. */
+  .cfg-page.is-app .cfg-shell.sheet-collapsed .cfg-stage {
+    flex: 1 1 auto;
+    block-size: auto;
+  }
+
+  .cfg-page.is-app .cfg-shell.sheet-collapsed .cfg-panel {
+    flex: none;
+  }
+
+  .cfg-page.is-app .cfg-shell.sheet-collapsed:not(.is-dragging) .cfg-stepper,
+  .cfg-page.is-app .cfg-shell.sheet-collapsed:not(.is-dragging) .cfg-panel-body {
+    display: none;
+  }
+
+  .cfg-page.is-app .cfg-shell.sheet-collapsed .cfg-sheet-handle {
+    color: var(--mint-dark);
+  }
+
+  .cfg-page.is-app .cfg-shell.sheet-collapsed .cfg-sheet-grip {
+    background: var(--mint);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfg-page.is-app .cfg-stage { transition: none; }
+}
+
+@media (max-width: 760px) {
+  /* Keep the doors pill clear of the sheet's rounded top. */
+  .cfg-page.is-app .cfg-stage-bar {
+    inset-block-end: 24px;
+  }
+}
