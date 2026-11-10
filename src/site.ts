@@ -2,12 +2,14 @@
 
 export const companyName = 'مؤسسة حسين سفر النفيعي للمصاعد';
 export const companyBrand = 'HENS LINE';
-export const companyEmail = 'elevatorsystem@avix-net.com';
+export const companyEmail = 'info@hensline.com';
 export const companyVat = '300385366700003';
 export const companyCr = '4031021948';
-export const companyPhones = ['0571207000'];
-export const companyAddress = 'مكة المكرمة - شارع المنصور';
-export const companyWhatsapp = '966571207000';
+export const companyPhones = ['0546484040'];
+// Registered business address (commercial register, unified no. 7013891473).
+export const companyAddress = '6554 أبو جعفر الحسيني، حي الخالدية، مكة المكرمة 24232';
+export const companyShortAddress = 'MCKB6554';
+export const companyWhatsapp = '966546484040';
 export const serviceArea = 'مكة المكرمة وجدة والطائف والمدينة المنورة';
 
 export const telHref = `tel:+966${companyPhones[0].slice(1)}`;

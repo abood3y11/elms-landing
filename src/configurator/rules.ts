@@ -1,3 +1,4 @@
+import { companyWhatsapp } from '../site';
 import {
   type CategoryKey, cityNames, findOption, optionsByCategory, presets, regions, STOPS_MAX, STOPS_MIN, summaryOrder, categoryLabels, elevatorTypes, services,
 } from './catalog';
@@ -191,7 +192,7 @@ export function shareUrl(state: ConfigState): string {
   return `${origin}/configure?design=${encodeDesign(state)}`;
 }
 
-export const COMPANY_WHATSAPP = '966571207000';
+export const COMPANY_WHATSAPP = companyWhatsapp;
 
 export function whatsappUrl(text: string): string {
   return `https://wa.me/${COMPANY_WHATSAPP}?text=${encodeURIComponent(text)}`;

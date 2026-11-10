@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ChevronDown, Clock3, Mail, MapPin, Menu, MessageCircle, Phone, SlidersHorizontal, X } from 'lucide-react';
 import {
-  companyAddress, companyBrand, companyCr, companyEmail, companyName, companyPhones, companyVat, footerServices, legalNav, moreNav, primaryNav,
+  companyAddress, companyBrand, companyCr, companyShortAddress, companyEmail, companyName, companyPhones, companyVat, footerServices, legalNav, moreNav, primaryNav,
   serviceArea, telHref, whatsappHref,
 } from '../site';
 import './layout.css';
@@ -63,7 +63,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
       <aside className="sh-drawer" role="dialog" aria-modal="true" aria-label="القائمة">
         <div className="sh-drawer-head">
           <Link to="/" className="sh-brand" onClick={onClose} tabIndex={open ? 0 : -1}>
-            <img src="/assets/hens-line-logo.svg" alt="" />
+            <img src="/hens-line-logo/svg/hens-line-primary.svg" alt="" />
             <span><strong>{companyBrand}</strong></span>
           </Link>
           <button ref={closeRef} type="button" className="sh-icon-button" onClick={onClose} aria-label="إغلاق القائمة" tabIndex={open ? 0 : -1}><X size={22} /></button>
@@ -103,7 +103,7 @@ export function SiteHeader() {
       </div>
       <header className="sh-header">
         <Link className="sh-brand" to="/" aria-label={`${companyBrand} — الرئيسية`}>
-          <img src="/assets/hens-line-logo.svg" alt="" />
+          <img src="/hens-line-logo/svg/hens-line-primary.svg" alt="" />
           <span>
             <strong>{companyBrand}</strong>
             <small>{companyName}</small>
@@ -143,7 +143,7 @@ export function SiteFooter() {
       <div className="sf-grid">
         <div className="sf-col sf-about">
           <Link to="/" className="sh-brand sf-brand">
-            <img src="/assets/hens-line-logo.svg" alt="" />
+            <img src="/hens-line-logo/svg/hens-line-on-dark-transparent.svg" alt="" />
             <span><strong>{companyBrand}</strong><small>{companyName}</small></span>
           </Link>
           <p>تركيب وصيانة وتحديث المصاعد وقطع الغيار وعقود الصيانة السنوية للمنازل والمباني التجارية والصحية.</p>
@@ -159,7 +159,7 @@ export function SiteFooter() {
         <div className="sf-col">
           <h3>تواصل معنا</h3>
           <ul className="sf-contact">
-            <li><MapPin size={16} aria-hidden="true" /> {companyAddress}</li>
+            <li><MapPin size={16} aria-hidden="true" /> <span>{companyAddress}<br /><small dir="ltr">{companyShortAddress}</small></span></li>
             <li><Phone size={16} aria-hidden="true" /> <a href={telHref} dir="ltr">{companyPhones[0]}</a></li>
             <li><Mail size={16} aria-hidden="true" /> <a href={`mailto:${companyEmail}`}>{companyEmail}</a></li>
             <li><Clock3 size={16} aria-hidden="true" /> طوارئ على مدار الساعة</li>

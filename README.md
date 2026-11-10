@@ -19,4 +19,4 @@ npm run build
 
 Deploy this folder independently to Vercel or Netlify. Use the generated HTTPS URL as the business website in Meta Business Manager.
 
-Current contact email in the site: `info@hensline-elevators.com`.
+Contact details (email, phone, address) live in `src/site.ts`; keep `index.html`'s structured data in step.
