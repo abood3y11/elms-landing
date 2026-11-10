@@ -8,11 +8,13 @@ export type FinishKind = 'wood' | 'marble' | 'granite' | 'solid' | 'steel';
 export type SteelPattern = 'brushed' | 'dots' | 'wave' | 'geo' | 'linen';
 export type Finish = Option & { code: string; kind: FinishKind; accent: string; pattern?: SteelPattern; group: 'wood' | 'stone' | 'solid' | 'steel' };
 
-export type CeilingPattern = 'dots' | 'rings' | 'slots' | 'squares' | 'star' | 'frame';
+// Mask patterns are perforated metal over a light panel; the fixture patterns are built as 3D light fittings.
+export type CeilingPattern = 'dots' | 'rings' | 'slots' | 'squares' | 'star' | 'frame' | 'hex' | 'waves' | 'halo' | 'linear' | 'stars' | 'panel';
+export const ceilingFixtures: CeilingPattern[] = ['halo', 'linear', 'stars', 'panel'];
 export type Ceiling = Option & { code: string; pattern: CeilingPattern };
 
 export type CategoryKey =
-  | 'wall' | 'trim' | 'floor' | 'ceiling' | 'mirror' | 'handrail'
+  | 'wall' | 'trim' | 'floor' | 'ceiling' | 'mirror' | 'handrail' | 'rail'
   | 'doorfinish' | 'door' | 'entrance' | 'panel' | 'panelSide' | 'light';
 
 export const regions = [
@@ -92,6 +94,12 @@ export const ceilings: Ceiling[] = [
   { id: 'CL-04', code: 'CL-04', ar: 'فضي بمربعات', en: 'Silver squares', color: '#c4cacd', pattern: 'squares' },
   { id: 'CL-05', code: 'CL-05', ar: 'ذهبي نجمي', en: 'Gold star', color: '#c39c4e', pattern: 'star' },
   { id: 'CL-06', code: 'CL-06', ar: 'أبيض بإطار مضيء', en: 'White, lit frame', color: '#eeeeea', pattern: 'frame' },
+  { id: 'CL-07', code: 'CL-07', ar: 'هالة ضوئية دائرية', en: 'Halo ring', color: '#1b1f23', pattern: 'halo' },
+  { id: 'CL-08', code: 'CL-08', ar: 'شرائط LED خطية', en: 'Linear LED strips', color: '#d9dde0', pattern: 'linear' },
+  { id: 'CL-09', code: 'CL-09', ar: 'سماء نجوم بألياف بصرية', en: 'Fibre-optic starry sky', color: '#0b0f1a', pattern: 'stars' },
+  { id: 'CL-10', code: 'CL-10', ar: 'لوح مضيء كامل', en: 'Full backlit panel', color: '#f4f4f0', pattern: 'panel' },
+  { id: 'CL-11', code: 'CL-11', ar: 'ذهبي بنقش سداسي', en: 'Gold hexagon', color: '#c9a55a', pattern: 'hex' },
+  { id: 'CL-12', code: 'CL-12', ar: 'فضي بموجات مضيئة', en: 'Silver light waves', color: '#c8cdd1', pattern: 'waves' },
 ];
 
 export const trims: Option[] = [
@@ -104,6 +112,8 @@ export const trims: Option[] = [
 export const mirrors: Option[] = [
   { id: 'half', ar: 'نصف الارتفاع', en: 'Half height', color: '' },
   { id: 'full', ar: 'ارتفاع كامل', en: 'Full height', color: '' },
+  { id: 'led', ar: 'مرآة بإضاءة خلفية LED', en: 'LED backlit mirror', color: '' },
+  { id: 'smoked', ar: 'برونزي مدخّن كامل', en: 'Full smoked bronze', color: '' },
   { id: 'none', ar: 'بدون مرآة', en: 'No mirror', color: '' },
 ];
 
@@ -112,6 +122,13 @@ export const handrails: Option[] = [
   { id: 'right', ar: 'يمين', en: 'Right', color: '' },
   { id: 'left', ar: 'يسار', en: 'Left', color: '' },
   { id: 'none', ar: 'بدون مسكة', en: 'None', color: '' },
+];
+
+export const railStyles: Option[] = [
+  { id: 'round', ar: 'أنبوب دائري بأطراف منحنية', en: 'Round tube, curved returns', color: '' },
+  { id: 'flat', ar: 'مسطّحة عصرية', en: 'Modern flat bar', color: '' },
+  { id: 'led', ar: 'مضيئة بشريط LED', en: 'LED-lit rail', color: '' },
+  { id: 'wood', ar: 'خشب على ستيل', en: 'Wood on steel', color: '' },
 ];
 
 export const doorFinishes: Option[] = [
@@ -141,6 +158,7 @@ export const panels: Option[] = [
   { id: 'classic', ar: 'أزرار دائرية', en: 'Round buttons', color: '' },
   { id: 'touch', ar: 'لوحة لمس', en: 'Touch panel', color: '' },
   { id: 'tft', ar: 'شاشة TFT مع أزرار', en: 'TFT with buttons', color: '' },
+  { id: 'column', ar: 'عمود زجاجي ذكي بطول الكابينة', en: 'Full-height smart glass column', color: '' },
 ];
 
 export const panelSides: Option[] = [
@@ -162,16 +180,16 @@ export const services = [
 ] as const;
 
 export const optionsByCategory: Record<CategoryKey, Option[]> = {
-  wall: walls, trim: trims, floor: floors, ceiling: ceilings, mirror: mirrors, handrail: handrails,
+  wall: walls, trim: trims, floor: floors, ceiling: ceilings, mirror: mirrors, handrail: handrails, rail: railStyles,
   doorfinish: doorFinishes, door: doors, entrance: entrances, panel: panels, panelSide: panelSides, light: lights,
 };
 
 export const categoryLabels: Record<CategoryKey, string> = {
-  wall: 'الجدران الداخلية', trim: 'الزوايا والوزرات', floor: 'الأرضية', ceiling: 'السقف', mirror: 'المرآة', handrail: 'المسكة',
+  wall: 'الجدران الداخلية', trim: 'الزوايا والوزرات', floor: 'الأرضية', ceiling: 'السقف', mirror: 'المرآة', handrail: 'المسكة', rail: 'شكل المسكة',
   doorfinish: 'تشطيب الأبواب والإطار', door: 'فتح الأبواب', entrance: 'المداخل', panel: 'لوحة التحكم', panelSide: 'موضع اللوحة', light: 'الإضاءة',
 };
 
-export const summaryOrder: CategoryKey[] = ['wall', 'trim', 'floor', 'ceiling', 'mirror', 'handrail', 'doorfinish', 'door', 'entrance', 'panel', 'panelSide', 'light'];
+export const summaryOrder: CategoryKey[] = ['wall', 'trim', 'floor', 'ceiling', 'mirror', 'handrail', 'rail', 'doorfinish', 'door', 'entrance', 'panel', 'panelSide', 'light'];
 
 export type Preset = { id: string; ar: string; values: Partial<Record<CategoryKey, string>> };
 
@@ -179,6 +197,8 @@ export const presets: Preset[] = [
   { id: 'wood-warm', ar: 'خشب ودافئ', values: { wall: 'W-02', floor: 'F-04', ceiling: 'CL-02', light: 'warm', mirror: 'half' } },
   { id: 'gold-white', ar: 'ذهبي وأبيض', values: { wall: 'ST-04', floor: 'F-01', ceiling: 'CL-05', light: 'neutral', mirror: 'half' } },
   { id: 'silver-grey', ar: 'فضي ورمادي', values: { wall: 'ST-02', floor: 'F-05', ceiling: 'CL-01', light: 'neutral', mirror: 'half' } },
+  { id: 'future', ar: 'مستقبلي', values: { wall: 'P-02', floor: 'F-03', ceiling: 'CL-07', light: 'neutral', mirror: 'led', rail: 'led', panel: 'column' } },
+  { id: 'night-sky', ar: 'سماء الليل', values: { wall: 'S-03', floor: 'F-07', ceiling: 'CL-09', light: 'warm', mirror: 'smoked', rail: 'flat', panel: 'touch' } },
 ];
 
 export function findOption(category: CategoryKey, id: string): Option | undefined {

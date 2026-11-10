@@ -1,11 +1,15 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer, MeshReflectorMaterial, OrbitControls } from '@react-three/drei';
+import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing';
+import { ToneMappingMode } from 'postprocessing';
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import { ceilings, doorFinishes, floors, lights, trims, walls, type Ceiling, type Finish } from './catalog';
+import { ceilings, doorFinishes, floors, lights, trims, walls, type Finish } from './catalog';
 import type { Design } from './rules';
-import { ceilingMask, finishCanvas } from './textures';
+import { finishCanvas } from './textures';
+import { ControlPanel, useRide, type PanelKind, type Ride } from './cabin/ControlPanel';
+import { CeilingFixture, Handrail, Mirror, useLightLevel } from './cabin/fixtures';
 
 // The cabin is built from plain boxes and planes in code (no model file), so
 // every choice redraws instantly. Units are metres: 2 x 2 floor, 2.4 high,
@@ -150,6 +154,12 @@ function Wall({ side, doorStyle, interior, shell, trim, doorMaterial, open }: {
           )}
         </group>
       ))}
+      {!doorStyle && side !== 'front' && [-place.width / 6, place.width / 6].map((u) => (
+        <mesh key={`seam${u}`} position={[u, H / 2 - 0.01, 0.0035]}>
+          <boxGeometry args={[0.006, H - 0.24, 0.004]} />
+          <meshStandardMaterial color="#14171a" roughness={0.8} />
+        </mesh>
+      ))}
       {doorStyle && (
         <>
           <DoorLeaves style={doorStyle} material={doorMaterial} open={open} />
@@ -174,114 +184,6 @@ function Corners({ material }: { material: THREE.Material }) {
         </mesh>
       ))}
     </>
-  );
-}
-
-function Mirror({ kind, frame }: { kind: string; frame: THREE.Material }) {
-  if (kind === 'none') return null;
-  const bottom = kind === 'full' ? 0.14 : 1.08;
-  const top = 2.22;
-  const height = top - bottom;
-  const width = 1.36;
-  return (
-    <group position={[0, bottom + height / 2, -D / 2 + 0.012]}>
-      <mesh>
-        <planeGeometry args={[width, height]} />
-        <MeshReflectorMaterial resolution={512} mirror={1} blur={[0, 0]} mixBlur={0} mixStrength={1.15} color="#cfd8dc" metalness={0.2} roughness={0.05} depthScale={0} />
-      </mesh>
-      {[[0, height / 2 + 0.015, width + 0.06, 0.03], [0, -height / 2 - 0.015, width + 0.06, 0.03]].map(([x, y, w, h]) => (
-        <mesh key={`h${y}`} material={frame} position={[x, y, 0.005]}><boxGeometry args={[w, h, 0.012]} /></mesh>
-      ))}
-      {[-1, 1].map((sign) => (
-        <mesh key={`v${sign}`} material={frame} position={[sign * (width / 2 + 0.015), 0, 0.005]}><boxGeometry args={[0.03, height, 0.012]} /></mesh>
-      ))}
-    </group>
-  );
-}
-
-function Handrail({ side, material }: { side: string; material: THREE.Material }) {
-  if (side === 'none') return null;
-  const y = 0.95;
-  const inset = 0.07;
-  const length = 1.4;
-  const placement = side === 'back'
-    ? { position: [0, y, -D / 2 + inset] as const, rotation: 0 }
-    : side === 'right'
-      ? { position: [-W / 2 + inset, y, 0] as const, rotation: Math.PI / 2 }
-      : { position: [W / 2 - inset, y, 0] as const, rotation: Math.PI / 2 };
-  return (
-    <group position={[...placement.position]} rotation={[0, placement.rotation, 0]}>
-      <mesh material={material} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.019, 0.019, length, 20]} />
-      </mesh>
-      {[-1, 1].map((sign) => (
-        <mesh key={sign} material={material} position={[sign * (length / 2 - 0.12), 0, -inset / 2 * (side === 'left' ? -1 : 1)]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.008, 0.008, inset, 10]} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-function Ceiling({ ceiling, light }: { ceiling: Ceiling; light: string }) {
-  const mask = useMemo(() => ceilingMask(ceiling), [ceiling]);
-  const alpha = useCanvasTexture(mask);
-  const metal = useMemo(() => {
-    const material = new THREE.MeshStandardMaterial({ color: ceiling.color, metalness: 0.8, roughness: 0.32, alphaMap: alpha ?? undefined, alphaTest: 0.5, side: THREE.DoubleSide });
-    if (alpha) {
-      alpha.wrapS = THREE.ClampToEdgeWrapping;
-      alpha.wrapT = THREE.ClampToEdgeWrapping;
-    }
-    return material;
-  }, [ceiling.color, alpha]);
-  useEffect(() => () => metal.dispose(), [metal]);
-  return (
-    <group position={[0, H, 0]}>
-      <mesh position={[0, -0.005, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[W, D]} />
-        <meshBasicMaterial color={light} toneMapped={false} />
-      </mesh>
-      <mesh material={metal} position={[0, -0.05, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[W, D]} />
-      </mesh>
-      <mesh position={[0, 0.03, 0]}>
-        <boxGeometry args={[W + 0.04, 0.06, D + 0.04]} />
-        <meshStandardMaterial color="#9aa1a6" metalness={0.6} roughness={0.5} />
-      </mesh>
-    </group>
-  );
-}
-
-function ControlPanel({ kind, side }: { kind: string; side: string }) {
-  // "Right" is the passenger's right when facing the doors from inside (looking +z).
-  const x = side === 'right' ? -0.72 : 0.72;
-  const plateColor = kind === 'touch' ? '#0d0f12' : '#aeb5b9';
-  const buttons = kind === 'classic' ? 8 : kind === 'tft' ? 6 : 0;
-  return (
-    <group position={[x, 1.2, D / 2 - 0.012]} rotation={[0, Math.PI, 0]}>
-      <mesh>
-        <boxGeometry args={[0.24, 0.78, 0.012]} />
-        <meshStandardMaterial color={plateColor} metalness={kind === 'touch' ? 0.1 : 0.55} roughness={kind === 'touch' ? 0.08 : 0.3} />
-      </mesh>
-      <mesh position={[0, kind === 'tft' ? 0.22 : 0.29, 0.008]}>
-        <planeGeometry args={kind === 'tft' ? [0.18, 0.2] : kind === 'touch' ? [0.18, 0.12] : [0.12, 0.06]} />
-        <meshBasicMaterial color={kind === 'touch' ? '#1d6b8f' : '#0b1a24'} toneMapped={false} />
-      </mesh>
-      {kind === 'touch' && Array.from({ length: 8 }).map((_, i) => (
-        <mesh key={i} position={[(i % 2 ? 0.045 : -0.045), 0.12 - Math.floor(i / 2) * 0.09, 0.0075]}>
-          <circleGeometry args={[0.022, 24]} />
-          <meshBasicMaterial color="#3fb0d8" transparent opacity={0.6} toneMapped={false} />
-        </mesh>
-      ))}
-      {Array.from({ length: buttons }).map((_, i) => (
-        <mesh key={i} position={[(i % 2 ? 0.05 : -0.05), (kind === 'tft' ? 0.04 : 0.17) - Math.floor(i / 2) * 0.1, 0.01]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.022, 0.022, 0.012, 24]} />
-          {kind === 'tft'
-            ? <meshStandardMaterial color="#e9eef0" emissive="#5ac8ff" emissiveIntensity={0.6} />
-            : <meshStandardMaterial color="#dfe4e6" metalness={0.9} roughness={0.2} />}
-        </mesh>
-      ))}
-    </group>
   );
 }
 
@@ -337,11 +239,13 @@ function viewConfig(view: ViewId, design: Design): ViewConfig {
       return { position: [3.4 * mirror, 2.3, 4.6], target: [0, 1.15, 0], fov: 38, orbit: { minDistance: 4, maxDistance: 8.5, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 0.6, maxPolar: 1.7, zoom: true, rotateSpeed: 0.6 } };
     }
     case 'ceiling':
-      return { position: [0, 0.45, 0.35], target: [0, H, 0], fov: 75, orbit: false };
+      return { position: [0, 0.6, 0.3], target: [0, H, 0], fov: 75, orbit: { minDistance: 1.7, maxDistance: 1.9, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 2.4, maxPolar: Math.PI, zoom: false, rotateSpeed: -0.4 } };
     case 'controls':
-      return { position: [panelX * 0.2, 1.3, 0.1], target: [panelX, 1.2, D / 2], fov: 55, orbit: { minDistance: 0.7, maxDistance: 1.1, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 1.2, maxPolar: 1.9, zoom: true, rotateSpeed: 0.4 } };
+      // The glass column carries its keypad higher, at eye level.
+      if (design.panel === 'column') return { position: [panelX * 0.5, 1.5, 0.2], target: [panelX, 1.5, D / 2], fov: 52, orbit: { minDistance: 0.45, maxDistance: 1.3, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 0.9, maxPolar: 2.1, zoom: true, rotateSpeed: 0.45 } };
+      return { position: [panelX * 0.55, 1.28, 0.25], target: [panelX, 1.22, D / 2], fov: 50, orbit: { minDistance: 0.45, maxDistance: 1.2, minAzimuth: -Infinity, maxAzimuth: Infinity, minPolar: 0.9, maxPolar: 2.1, zoom: true, rotateSpeed: 0.45 } };
     default:
-      return { position: [0, 1.25, 5.6], target: [0, 1.15, 0], fov: 40, orbit: { minDistance: 3.6, maxDistance: 9.5, minAzimuth: -0.5, maxAzimuth: 0.5, minPolar: 1.1, maxPolar: 1.75, zoom: true, rotateSpeed: 0.6 } };
+      return { position: [0, 1.25, 5.6], target: [0, 1.15, 0], fov: 40, orbit: { minDistance: 2.6, maxDistance: 9.5, minAzimuth: -1.2, maxAzimuth: 1.2, minPolar: 0.8, maxPolar: 1.85, zoom: true, rotateSpeed: 0.6 } };
   }
 }
 
@@ -380,7 +284,17 @@ function CameraRig({ config, resetKey }: { config: ViewConfig; resetKey: number 
   );
 }
 
-function Cabin({ design, view, doorsOpen }: { design: Design; view: ViewId; doorsOpen: boolean }) {
+function RideShake({ ride, children }: { ride: Ride; children: React.ReactNode }) {
+  const group = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    if (!group.current) return;
+    const moving = ride.phase === 'moving';
+    group.current.position.y = moving && !reducedMotion ? Math.sin(clock.elapsedTime * 38) * 0.0012 : 0;
+  });
+  return <group ref={group}>{children}</group>;
+}
+
+function Cabin({ design, view, doorsOpen, stops, lowPower }: { design: Design; view: ViewId; doorsOpen: boolean; stops: number; lowPower: boolean }) {
   const wall = (walls.find((item) => item.id === design.wall) ?? walls[0]);
   const floor = (floors.find((item) => item.id === design.floor) ?? floors[0]);
   const ceiling = (ceilings.find((item) => item.id === design.ceiling) ?? ceilings[0]);
@@ -395,15 +309,55 @@ function Cabin({ design, view, doorsOpen }: { design: Design; view: ViewId; door
   const doorMaterial = useMetal(doorOption.color, doorOption.id.endsWith('mirror'));
   const handrail = useMetal(trimColor === '#272b2d' ? '#3a3f42' : trimColor);
   const floorGeometry = useUvPlane({ u: 0, v: 0, w: W, h: D }, TILE);
+  const floorMap = (floorMaterial as THREE.MeshStandardMaterial).map;
+
+  const { ride, actions } = useRide(stops);
+  // Lights switch on (with a flicker) whenever the ceiling or the colour changes, or the ceiling view opens.
+  const level = useLightLevel(`${design.ceiling}|${design.light}|${view === 'ceiling'}`, reducedMotion);
+  const lamp = useRef<THREE.PointLight>(null);
+  const washes = useRef<(THREE.SpotLight | null)[]>([]);
+  const baseIntensity = design.light === 'warm' ? 5.5 : 7;
+  useFrame(() => {
+    if (lamp.current) lamp.current.intensity = baseIntensity * (0.08 + level.current * 0.92);
+    // Spot targets are not in the scene graph, so their matrices are refreshed by hand.
+    washes.current.forEach((spot) => { if (spot) { spot.intensity = 6 * level.current; spot.target.updateMatrixWorld(); } });
+  });
+
+  const riding = ride.phase === 'closing' || ride.phase === 'moving';
+  const effectiveOpen = riding ? false : ride.phase === 'arriving' || ride.doorHold === 'open' ? true : ride.doorHold === 'close' ? false : doorsOpen;
 
   const entrance = design.entrance;
   const doorStyle = design.door;
   const showFront = view !== 'front';
-  const common = { interior, shell, trim, doorMaterial, open: doorsOpen };
+  const common = { interior, shell, trim, doorMaterial, open: effectiveOpen };
+  const panelX = design.panelSide === 'right' ? -0.72 : 0.72;
 
   return (
-    <group>
-      <mesh geometry={floorGeometry} material={floorMaterial} rotation={[-Math.PI / 2, 0, 0]} />
+    <RideShake ride={ride}>
+      {lowPower ? (
+        <mesh geometry={floorGeometry} material={floorMaterial} rotation={[-Math.PI / 2, 0, 0]} />
+      ) : (
+        <mesh geometry={floorGeometry} rotation={[-Math.PI / 2, 0, 0]}>
+          <MeshReflectorMaterial
+            map={floorMap ?? undefined}
+            resolution={512}
+            mirror={0.35}
+            blur={[280, 90]}
+            mixBlur={1}
+            mixStrength={0.55}
+            roughness={0.32}
+            metalness={0}
+            depthScale={0}
+          />
+        </mesh>
+      )}
+      {showFront && (
+        // Door sill: the aluminium threshold under the main doors.
+        <mesh position={[0, 0.003, D / 2 - 0.04]}>
+          <boxGeometry args={[DW + 0.06, 0.006, 0.08]} />
+          <meshStandardMaterial color="#b7bec2" metalness={0.9} roughness={0.35} />
+        </mesh>
+      )}
       <mesh position={[0, -0.04, 0]}><boxGeometry args={[W + 0.04, 0.07, D + 0.04]} /><meshStandardMaterial color="#8d959a" metalness={0.5} roughness={0.5} /></mesh>
       {/* side-right / side-left are the passenger's right/left facing the main doors from inside (+z). */}
       <Wall side="back" doorStyle={entrance === 'through' ? doorStyle : undefined} {...common} />
@@ -411,24 +365,43 @@ function Cabin({ design, view, doorsOpen }: { design: Design; view: ViewId; door
       <Wall side="right" doorStyle={entrance === 'side-left' ? doorStyle : undefined} {...common} />
       {showFront && <Wall side="front" doorStyle={doorStyle} {...common} />}
       <Corners material={trim} />
-      {entrance !== 'through' && <Mirror kind={design.mirror} frame={trim} />}
-      <Handrail side={design.handrail} material={handrail} />
-      <Ceiling ceiling={ceiling} light={lightColor} />
-      {showFront && <ControlPanel kind={design.panel} side={design.panelSide} />}
+      {entrance !== 'through' && <Mirror kind={design.mirror} frame={trim} glowColor={lightColor} level={level} lowPower={lowPower} />}
+      <Handrail side={design.handrail} style={design.rail ?? 'round'} material={handrail} glowColor={lightColor} level={level} />
+      <CeilingFixture ceiling={ceiling} glowColor={lightColor} level={level} trim={trim} />
+      {showFront && (
+        <ControlPanel kind={(design.panel as PanelKind) ?? 'classic'} x={panelX} stops={stops} ride={ride} actions={actions} trimColor={trimColor} />
+      )}
       {view === 'landing' && <Landing doorMaterial={doorMaterial} />}
-      <pointLight position={[0, H - 0.25, 0]} color={lightColor} intensity={design.light === 'warm' ? 5.5 : 7} distance={6} decay={1.4} />
-    </group>
+      <pointLight ref={lamp} position={[0, H - 0.25, 0]} color={lightColor} intensity={0} distance={6} decay={1.4} />
+      {/* Downlight washes: soft pools of light on the side walls. */}
+      {[-0.55, 0.55].map((x, i) => (
+        <spotLight
+          key={x}
+          ref={(node) => { washes.current[i] = node; }}
+          position={[x, H - 0.06, -0.2]}
+          angle={0.75}
+          penumbra={0.85}
+          distance={3.2}
+          decay={1.6}
+          color={lightColor}
+          intensity={0}
+          target-position={[x * 1.9, 0.6, -0.2]}
+        />
+      ))}
+    </RideShake>
   );
 }
 
-export default function CabinPreview({ design, view, doorsOpen, resetKey }: { design: Design; view: ViewId; doorsOpen: boolean; resetKey: number }) {
+export default function CabinPreview({ design, view, doorsOpen, resetKey, stops = 3 }: { design: Design; view: ViewId; doorsOpen: boolean; resetKey: number; stops?: number }) {
   const config = useMemo(() => viewConfig(view, design), [view, design]);
+  // Phones get a lighter scene: no reflective floor, lower-resolution mirror.
+  const lowPower = typeof window !== 'undefined' && (window.innerWidth < 761 || (navigator.hardwareConcurrency ?? 8) <= 4);
   return (
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: true, preserveDrawingBuffer: false }}
       camera={{ position: config.position, fov: config.fov, near: 0.01, far: 60 }}
-      onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 0.92; }}
+      onCreated={({ gl }) => { gl.toneMappingExposure = 0.95; }}
     >
       <color attach="background" args={['#eceeeb']} />
       <hemisphereLight args={['#ffffff', '#d9d4c8', 0.9]} />
@@ -440,8 +413,13 @@ export default function CabinPreview({ design, view, doorsOpen, resetKey }: { de
         <Lightformer form="rect" intensity={0.8} position={[-6, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} scale={[8, 3, 1]} />
         <Lightformer form="rect" intensity={0.8} position={[6, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} scale={[8, 3, 1]} />
       </Environment>
-      <Cabin design={design} view={view} doorsOpen={doorsOpen} />
+      <Cabin design={design} view={view} doorsOpen={doorsOpen} stops={stops} lowPower={lowPower} />
       <CameraRig config={config} resetKey={resetKey} />
+      {/* Bloom picks up only the LEDs, displays and glowing ceilings (colours pushed above 1). */}
+      <EffectComposer multisampling={lowPower ? 0 : 4}>
+        <Bloom mipmapBlur intensity={0.85} luminanceThreshold={1} luminanceSmoothing={0.25} radius={0.7} />
+        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+      </EffectComposer>
     </Canvas>
   );
 }

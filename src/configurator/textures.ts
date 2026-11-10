@@ -1,4 +1,4 @@
-import type { Ceiling, Finish } from './catalog';
+import { ceilingFixtures, type Ceiling, type Finish } from './catalog';
 
 // Procedural finishes drawn on a canvas, so the designer works before real
 // sample photos exist. Everything is seeded by the option code: the same
@@ -280,6 +280,39 @@ export function ceilingMask(ceiling: Ceiling, size = 512): HTMLCanvasElement {
       ctx.fillStyle = '#fff';
       ctx.fillRect(margin + size * 0.05, margin + size * 0.05, size - margin * 2 - size * 0.1, size - margin * 2 - size * 0.1);
       break;
+    case 'hex': {
+      const r = size / 16;
+      const h = Math.sqrt(3) * r;
+      ctx.lineWidth = size / 110;
+      for (let row = -1; row < 14; row += 1) {
+        for (let col = -1; col < 12; col += 1) {
+          const cx = col * r * 3 + (row % 2 ? r * 1.5 : 0);
+          const cy = row * (h / 2);
+          if (cx < margin || cx > size - margin || cy < margin || cy > size - margin) continue;
+          ctx.beginPath();
+          for (let k = 0; k < 6; k += 1) {
+            const a = (Math.PI / 3) * k;
+            const x = cx + Math.cos(a) * r * 0.82;
+            const y = cy + Math.sin(a) * r * 0.82;
+            if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+      break;
+    }
+    case 'waves':
+      ctx.lineWidth = size / 70;
+      for (let row = 0; row < 7; row += 1) {
+        ctx.beginPath();
+        for (let x = margin; x <= size - margin; x += size / 128) {
+          const y = margin + size * 0.06 + row * ((size - margin * 2 - size * 0.12) / 6) + Math.sin((x / size) * Math.PI * 5) * size * 0.025;
+          if (x === margin) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      break;
     default:
       break;
   }
@@ -287,11 +320,55 @@ export function ceilingMask(ceiling: Ceiling, size = 512): HTMLCanvasElement {
   return element;
 }
 
+/** Swatches for the ceilings that are built as light fittings rather than perforated metal. */
+function fixtureSwatch(ceiling: Ceiling): string {
+  const { element, ctx } = canvas(160);
+  const c = 80;
+  ctx.fillStyle = ceiling.color;
+  ctx.fillRect(0, 0, 160, 160);
+  const glow = (draw: () => void, blur = 14, color = '#fff6dc') => {
+    ctx.save();
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    draw();
+    ctx.restore();
+  };
+  if (ceiling.pattern === 'halo') {
+    glow(() => { ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(c, c, 48, 0, Math.PI * 2); ctx.stroke(); });
+    glow(() => { ctx.beginPath(); ctx.arc(c, c, 9, 0, Math.PI * 2); ctx.fill(); }, 10);
+  } else if (ceiling.pattern === 'linear') {
+    for (let i = 0; i < 4; i += 1) glow(() => ctx.fillRect(30 + i * 30, 18, 8, 124), 12);
+  } else if (ceiling.pattern === 'stars') {
+    const rand = seeded(ceiling.id);
+    for (let i = 0; i < 90; i += 1) {
+      const size = rand() < 0.15 ? 2.4 : 1.2;
+      glow(() => { ctx.beginPath(); ctx.arc(rand() * 160, rand() * 160, size, 0, Math.PI * 2); ctx.fill(); }, 6, rand() < 0.3 ? '#bfe3ff' : '#fff6dc');
+    }
+  } else {
+    const gradient = ctx.createRadialGradient(c, c, 10, c, c, 110);
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(1, '#ece8dc');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(10, 10, 140, 140);
+    ctx.strokeStyle = '#b9bfc3';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(10, 10, 140, 140);
+  }
+  return element.toDataURL('image/png');
+}
+
 export function ceilingSwatch(ceiling: Ceiling): string {
   const key = `cs:${ceiling.id}`;
   const cached = swatchCache.get(key);
   if (cached) return cached;
   let url = '';
+  if (ceilingFixtures.includes(ceiling.pattern)) {
+    try { url = fixtureSwatch(ceiling); } catch { url = ''; }
+    swatchCache.set(key, url);
+    return url;
+  }
   try {
     const mask = ceilingMask(ceiling, 160);
     const { element, ctx } = canvas(160);

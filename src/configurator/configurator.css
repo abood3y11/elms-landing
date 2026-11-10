@@ -1367,3 +1367,18 @@
     transition: none !important;
   }
 }
+
+.cfg-caption.cfg-caption-hint {
+  background: linear-gradient(135deg, #f2c46d 0%, #d99a24 100%);
+  color: #102331;
+  animation: cfg-hint-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes cfg-hint-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(242, 196, 109, 0.55); }
+  50% { box-shadow: 0 0 0 10px rgba(242, 196, 109, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cfg-caption.cfg-caption-hint { animation: none; }
+}

@@ -15,7 +15,7 @@ export type ConfigState = {
 };
 
 export const defaultDesign: Design = {
-  wall: 'W-02', trim: 'silver', floor: 'F-04', ceiling: 'CL-01', mirror: 'half', handrail: 'back',
+  wall: 'W-02', trim: 'silver', floor: 'F-04', ceiling: 'CL-01', mirror: 'half', handrail: 'back', rail: 'round',
   doorfinish: 'silver-satin', door: 'center', entrance: 'single', panel: 'classic', panelSide: 'right', light: 'warm',
 };
 
@@ -37,7 +37,8 @@ export function disabledReason(design: Design, category: CategoryKey, id: string
 export function choose(design: Design, category: CategoryKey, id: string): Design {
   if (disabledReason(design, category, id)) return design;
   const next: Design = { ...design, [category]: id };
-  if (category === 'mirror' && id === 'full' && next.handrail === 'back') next.handrail = 'none';
+  // A full-height mirror leaves no wall for a rail behind it.
+  if (category === 'mirror' && (id === 'full' || id === 'smoked') && next.handrail === 'back') next.handrail = 'none';
   if (category === 'entrance') {
     if (id === 'through') {
       next.mirror = 'none';

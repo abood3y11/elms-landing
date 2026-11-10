@@ -373,7 +373,7 @@ export default function ConfiguratorPage() {
         <>
           <div className="cfg-canvas">
             <Suspense fallback={<div className="cfg-loading"><Box size={28} aria-hidden="true" />{t.loading3d}</div>}>
-              <CabinPreview design={state.design} view={view} doorsOpen={doorsOpen} resetKey={resetKey} />
+              <CabinPreview design={state.design} view={view} doorsOpen={doorsOpen} resetKey={resetKey} stops={state.stops} />
             </Suspense>
           </div>
           <div className="cfg-views" role="group" aria-label={t.viewLabel}>
@@ -399,6 +399,7 @@ export default function ConfiguratorPage() {
             </button>
           </div>
           {view === 'ceiling' && activeCeiling && <div className="cfg-caption">{activeCeiling.ar} · {activeCeiling.code}</div>}
+          {view === 'controls' && <div className="cfg-caption cfg-caption-hint">{t.panelHint}</div>}
         </>
       ) : (
         <div className="cfg-welcome">
@@ -525,7 +526,14 @@ export default function ConfiguratorPage() {
                 {materialTab === 'wall' && <SearchableGrid category="wall" state={state} onChoose={onChoose} groups />}
                 {materialTab === 'floor' && <SearchableGrid category="floor" state={state} onChoose={onChoose} />}
                 {materialTab === 'ceiling' && <SearchableGrid category="ceiling" state={state} onChoose={onChoose} />}
-                {['trim', 'mirror', 'handrail'].includes(materialTab) && <OptionGrid category={materialTab as CategoryKey} state={state} onChoose={onChoose} />}
+                {['trim', 'mirror'].includes(materialTab) && <OptionGrid category={materialTab as CategoryKey} state={state} onChoose={onChoose} />}
+                {materialTab === 'handrail' && (
+                  <>
+                    <OptionGrid category="handrail" state={state} onChoose={onChoose} />
+                    <h3 className="cfg-label">{categoryLabels.rail}</h3>
+                    <OptionGrid category="rail" state={state} onChoose={onChoose} />
+                  </>
+                )}
               </div>
             )}
 
