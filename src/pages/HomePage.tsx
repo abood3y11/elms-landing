@@ -1,7 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useLayoutEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BellRing, ClipboardCheck, Mail, MapPin, MessageCircle, Phone, ShieldCheck, SlidersHorizontal, Sparkles } from 'lucide-react';
-import { PageShell } from '../motion/motion';
+import { PageShell, reducedMotion } from '../motion/motion';
 import { gallery, img, marqueeItems, processSteps, products, services, stats, testimonials } from '../content';
 import { companyAddress, companyEmail, companyPhones, telHref, whatsappHref } from '../site';
 import { CardGrid, CtaBand, ImageTile, Marquee, Section, SectionHead, Stars, StepsLine } from '../ui/Blocks';
@@ -11,12 +12,118 @@ const ScrollElevatorRail = lazy(() => import('../components/ScrollElevatorRail')
 
 const designerSwatches = ['#bf9466', '#ece9e3', '#c9a55a', '#2a2a2d', '#c3c9cd'];
 
-export default function HomePage() {
+// The hero photo changes while the hero scrolls away.
+const heroShots = [
+  { src: img('villa-gold'), alt: 'مصعد فيلا بتشطيب ذهبي من أعمال HENS LINE' },
+  { src: img('palace'), alt: 'مصعد زجاجي في قصر' },
+  { src: img('black-modern'), alt: 'مصعد حديث بتشطيب أسود' },
+];
+
+// The pinned «30 years» story: one photo per stop, swapped by scrolling.
+const storySlides = [
+  { image: img('villa-gold-2'), tag: 'الفلل', title: 'مصاعد فلل بتشطيب ذهبي وزجاجي', text: 'تصاميم هادئة للمنازل الخاصة، تركيب نظيف ومتابعة بعد التسليم.' },
+  { image: img('palace'), tag: 'القصور والصالات', title: 'إطارات بانورامية تبرز المكان', text: 'مصاعد زجاجية في وسط الدرج تصبح جزءًا من تصميم البيت.' },
+  { image: img('round-gold'), tag: 'بانورامي', title: 'مصاعد دائرية بزجاج كامل', text: 'حلول خاصة للمساحات المفتوحة والصالات المرتفعة.' },
+  { image: img('black-modern'), tag: 'سكني وتجاري', title: 'كبائن حديثة للمباني السكنية', text: 'تشغيل هادئ، أنظمة أمان حديثة، وصيانة دورية بعقد واضح.' },
+  { image: img('outdoor-shaft'), tag: 'خارجي', title: 'مصاعد خارجية على الواجهة', text: 'عندما لا يتوفر بئر داخلي، نبني الهيكل خارج المبنى بأمان.' },
+];
+
+function useHomeScenes(root: React.RefObject<HTMLDivElement | null>) {
+  useLayoutEffect(() => {
+    const scope = root.current;
+    if (!scope || reducedMotion()) return undefined;
+    const ctx = gsap.context(() => {
+      // Hero: cross-fade the main photo while the hero scrolls out.
+      const shots = gsap.utils.toArray<HTMLElement>('.hero-swap img');
+      if (shots.length > 1) {
+        gsap.set(shots.slice(1), { autoAlpha: 0 });
+        const heroTl = gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 0.6 } });
+        shots.slice(1).forEach((shot, i) => {
+          heroTl.to(shots[i], { autoAlpha: 0, duration: 1 }).fromTo(shot, { autoAlpha: 0, scale: 1.12 }, { autoAlpha: 1, scale: 1, duration: 1 }, '<');
+        });
+      }
+      gsap.to('.hero-bignum', { yPercent: 35, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+
+      // Story: pin the section and step through the photos.
+      const section = scope.querySelector<HTMLElement>('.story');
+      if (!section) return;
+      const photos = gsap.utils.toArray<HTMLElement>('.story-photo', section);
+      const captions = gsap.utils.toArray<HTMLElement>('.story-caption', section);
+      const steps = photos.length - 1;
+      gsap.set(photos.slice(1), { autoAlpha: 0 });
+      gsap.set(captions.slice(1), { autoAlpha: 0, y: 40 });
+      const tl = gsap.timeline({
+        defaults: { ease: 'power2.inOut' },
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: () => '+=' + String(window.innerHeight * steps * 0.7),
+          pin: true,
+          scrub: 0.8,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const index = Math.min(steps, Math.round(self.progress * steps));
+            section.querySelectorAll('.story-dots i').forEach((dot, i) => dot.classList.toggle('on', i <= index));
+            const counter = section.querySelector('.story-count b');
+            if (counter) counter.textContent = String(index + 1).padStart(2, '0');
+          },
+        },
+      });
+      tl.fromTo('.story-bignum', { scale: 0.85, yPercent: 8 }, { scale: 1.12, yPercent: -8, ease: 'none', duration: steps }, 0);
+      for (let i = 1; i <= steps; i += 1) {
+        const at = i - 1;
+        tl.to(photos[i - 1], { autoAlpha: 0, scale: 1.08, duration: 0.6 }, at + 0.2)
+          .fromTo(photos[i], { autoAlpha: 0, scale: 1.18 }, { autoAlpha: 1, scale: 1, duration: 0.6 }, at + 0.2)
+          .to(captions[i - 1], { autoAlpha: 0, y: -40, duration: 0.45 }, at + 0.2)
+          .fromTo(captions[i], { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.45 }, at + 0.45);
+      }
+    }, scope);
+    return () => ctx.revert();
+  }, [root]);
+}
+
+function Story() {
   return (
+    <section className="story" aria-label="أكثر من 30 عامًا من الخبرة">
+      <div className="story-bignum" aria-hidden="true"><span>30</span><small>عامًا</small></div>
+      <div className="story-inner">
+        <div className="story-copy">
+          <span className="pill">شركة رائدة منذ أكثر من 30 عامًا</span>
+          <h2>خبرة <em>30 عامًا</em> في كل مصعد نركّبه.</h2>
+          <div className="story-captions">
+            {storySlides.map((slide) => (
+              <div key={slide.title} className="story-caption">
+                <span className="story-tag">{slide.tag}</span>
+                <h3>{slide.title}</h3>
+                <p>{slide.text}</p>
+              </div>
+            ))}
+          </div>
+          <div className="story-progress" aria-hidden="true">
+            <span className="story-count"><b>01</b> / {String(storySlides.length).padStart(2, '0')}</span>
+            <span className="story-dots">{storySlides.map((slide, i) => <i key={slide.title} className={i === 0 ? 'on' : ''} />)}</span>
+          </div>
+        </div>
+        <div className="story-media">
+          {storySlides.map((slide, i) => <img key={slide.title} className="story-photo" src={slide.image} alt={slide.title} loading={i === 0 ? 'eager' : 'lazy'} />)}
+          <div className="story-badge"><strong>+30</strong><span>عامًا من الخبرة</span></div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function HomePage() {
+  const root = useRef<HTMLDivElement>(null);
+  useHomeScenes(root);
+  return (
+    <div ref={root}>
     <PageShell className="is-home">
       <Suspense fallback={null}><ScrollElevatorRail /></Suspense>
 
       <section className="hero">
+        <div className="hero-bignum" aria-hidden="true"><span>30</span><small>عامًا من الريادة</small></div>
         <div className="hero-inner">
           <div>
             <span className="pill" data-reveal="up"><Sparkles size={15} aria-hidden="true" /> تركيب وصيانة وتحديث المصاعد</span>
@@ -35,15 +142,27 @@ export default function HomePage() {
             </ul>
           </div>
           <div className="hero-visual" data-reveal="scale">
-            <div className="parallax-frame main"><img src={img('villa-gold')} alt="مصعد فيلا بتشطيب ذهبي من أعمال HENS LINE" data-parallax="0.12" /></div>
-            <div className="parallax-frame second" data-parallax="-0.25"><img src={img('round-gold')} alt="مصعد بانورامي دائري" /></div>
-            <div className="float-card a" data-parallax="-0.4">
-              <span className="card-icon" aria-hidden="true"><BellRing size={20} /></span>
-              <div><strong>طوارئ 24/7</strong><small>فريق جاهز للأعطال</small></div>
+            <div className="parallax-frame main hero-swap">
+              {heroShots.map((shot, i) => <img key={shot.src} src={shot.src} alt={shot.alt} loading={i === 0 ? 'eager' : 'lazy'} />)}
             </div>
-            <div className="float-card b" data-parallax="0.3">
-              <span className="card-icon" aria-hidden="true"><ShieldCheck size={20} /></span>
-              <div><strong>+30 سنة</strong><small>خبرة في المصاعد</small></div>
+            <div className="parallax-frame second" data-parallax="-0.25"><img src={img('round-gold')} alt="مصعد بانورامي دائري" /></div>
+            <div className="float-wrap a" data-parallax="-0.4">
+              <div className="float-card">
+                <span className="card-icon" aria-hidden="true"><BellRing size={20} /></span>
+                <div><strong>طوارئ 24/7</strong><small>فريق جاهز للأعطال</small></div>
+              </div>
+            </div>
+            <div className="float-wrap b" data-parallax="0.3">
+              <div className="float-card is-hero">
+                <strong className="float-num">+30</strong>
+                <div><strong>عامًا من الخبرة</strong><small>شركة رائدة في المصاعد</small></div>
+              </div>
+            </div>
+            <div className="float-wrap c" data-parallax="-0.2">
+              <div className="float-card">
+                <span className="card-icon" aria-hidden="true"><ShieldCheck size={20} /></span>
+                <div><strong>عقود AMC</strong><small>صيانة شهرية وسنوية</small></div>
+              </div>
             </div>
           </div>
         </div>
@@ -59,6 +178,8 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+
+      <Story />
 
       <Section id="services">
         <SectionHead eyebrow="خدماتنا" title="كل ما يحتاجه مصعدك، من المعاينة حتى الصيانة." lead="فريق واحد يتابع مصعدك من أول زيارة، فلا تتنقل بين أكثر من جهة." />
@@ -160,5 +281,6 @@ export default function HomePage() {
         <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-lg"><MessageCircle size={18} aria-hidden="true" /> واتساب</a>
       </CtaBand>
     </PageShell>
+    </div>
   );
 }

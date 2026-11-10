@@ -1194,14 +1194,276 @@ body {
   border: 6px solid #fff;
 }
 
-.hero-visual .float-card.a {
-  inset-block-start: 8%;
-  inset-inline-end: 2%;
+/* Floating cards: GSAP drifts the wrapper on scroll, CSS bobs the card itself. */
+.float-wrap {
+  position: absolute;
+  z-index: 3;
 }
 
-.hero-visual .float-card.b {
-  inset-block-end: 2%;
-  inset-inline-start: 10%;
+.float-wrap .float-card {
+  position: relative;
+  animation: ui-float 5.5s ease-in-out infinite;
+}
+
+.float-wrap.a { inset-block-start: 6%; inset-inline-end: -2%; }
+.float-wrap.b { inset-block-end: 3%; inset-inline-start: 4%; }
+.float-wrap.c { inset-block-start: 44%; inset-inline-start: -8%; }
+
+.float-wrap.b .float-card { animation-duration: 6.5s; animation-delay: -2s; }
+.float-wrap.c .float-card { animation-duration: 7s; animation-delay: -4s; }
+
+@keyframes ui-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-0.6deg); }
+}
+
+.float-card.is-hero {
+  gap: 14px;
+  padding: 16px 22px;
+  background: var(--ui-gold);
+  color: var(--navy);
+  box-shadow: 0 22px 44px rgba(217, 154, 36, 0.4);
+}
+
+.float-card.is-hero small {
+  color: rgba(16, 35, 49, 0.75);
+}
+
+.float-num {
+  font-size: 2.6rem;
+  font-weight: 900;
+  line-height: 1;
+  direction: ltr;
+}
+
+/* The «30» that sits behind the hero — the first thing the eye lands on. */
+.hero-bignum {
+  position: absolute;
+  inset-block-start: 2%;
+  inset-inline-start: 1vw;
+  z-index: -1;
+  display: grid;
+  justify-items: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-bignum span {
+  font-size: clamp(15rem, 30vw, 28rem);
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  direction: ltr;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(15, 118, 110, 0.16);
+  background: linear-gradient(180deg, rgba(15, 118, 110, 0.1) 0%, rgba(217, 154, 36, 0.08) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hero-bignum small {
+  margin-block-start: 10px;
+  color: rgba(15, 118, 110, 0.14);
+  font-size: clamp(1.2rem, 2.6vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.hero-swap img + img {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* ---------- pinned «30 years» story ---------- */
+
+.story {
+  position: relative;
+  min-block-size: 100vh;
+  min-block-size: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: calc(var(--sh-height, 68px) + clamp(12px, 3vw, 32px)) var(--ui-gutter) clamp(24px, 4vw, 48px);
+  background: var(--ui-dark);
+  color: #fff;
+  isolation: isolate;
+}
+
+.story-bignum {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  place-content: center start;
+  justify-items: center;
+  padding-inline-start: 3vw;
+  pointer-events: none;
+  user-select: none;
+}
+
+.story-bignum span {
+  font-size: clamp(18rem, 46vw, 42rem);
+  font-weight: 900;
+  line-height: 0.78;
+  letter-spacing: -0.05em;
+  direction: ltr;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(94, 234, 212, 0.16);
+  background: linear-gradient(180deg, rgba(242, 196, 109, 0.18) 0%, rgba(15, 118, 110, 0.04) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.story-bignum small {
+  color: rgba(255, 255, 255, 0.1);
+  font-size: clamp(1.6rem, 4vw, 3.4rem);
+  font-weight: 900;
+}
+
+.story-inner {
+  inline-size: 100%;
+  max-inline-size: var(--ui-max);
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: center;
+}
+
+.story .pill {
+  background: rgba(242, 196, 109, 0.16);
+  color: #f2c46d;
+}
+
+.story h2 {
+  margin-block: 14px 0;
+  color: #fff;
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.story h2 em {
+  font-style: normal;
+  background: var(--ui-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.story-captions {
+  position: relative;
+  min-block-size: 150px;
+  margin-block: 26px 18px;
+}
+
+.story-caption {
+  position: absolute;
+  inset: 0;
+}
+
+.story-caption + .story-caption,
+.story-photo + .story-photo {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.story-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(94, 234, 212, 0.14);
+  color: #5eead4;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.story-caption h3 {
+  margin: 12px 0 8px;
+  color: #fff;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+}
+
+.story-caption p {
+  margin: 0;
+  max-inline-size: 460px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.9;
+}
+
+.story-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.story-count {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 800;
+  direction: ltr;
+}
+
+.story-count b {
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.story-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.story-dots i {
+  inline-size: 28px;
+  block-size: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: background 0.3s ease;
+}
+
+.story-dots i.on {
+  background: linear-gradient(90deg, #f2c46d, #5eead4);
+}
+
+.story-media {
+  position: relative;
+  aspect-ratio: 4 / 4.6;
+  max-block-size: 76vh;
+  inline-size: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 26px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4);
+}
+
+.story-photo {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.story-badge {
+  position: absolute;
+  inset-block-end: 18px;
+  inset-inline-start: 18px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: var(--ui-gold);
+  color: var(--navy);
+  font-weight: 900;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+  animation: ui-float 6s ease-in-out infinite;
+}
+
+.story-badge strong {
+  font-size: 2rem;
+  line-height: 1;
+  direction: ltr;
 }
 
 .float-card .card-icon {
@@ -1496,6 +1758,7 @@ a.contact-item:hover {
 
 @media (min-width: 1180px) {
   .page-root.is-home .hero-inner,
+  .page-root.is-home .story-inner,
   .page-root.is-home .sec-inner,
   .page-root.is-home .stats {
     padding-inline-end: 190px;
@@ -1588,8 +1851,47 @@ a.contact-item:hover {
     min-block-size: 380px;
   }
 
-  .hero-visual .float-card.a {
-    display: none;
+  .float-wrap .float-card {
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .float-wrap .float-card strong {
+    font-size: 0.9rem;
+  }
+
+  .float-wrap .float-card small {
+    font-size: 0.72rem;
+  }
+
+  .float-wrap .card-icon {
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: 10px;
+  }
+
+  .float-wrap .card-icon svg {
+    inline-size: 16px;
+    block-size: 16px;
+  }
+
+  .float-num {
+    font-size: 1.8rem;
+  }
+
+  .float-wrap.a { inset-block-start: 3%; inset-inline-end: 0; }
+  .float-wrap.b { inset-block-end: 2%; inset-inline-start: 0; }
+  .float-wrap.c { inset-block-start: 40%; inset-inline-start: -2%; }
+
+  .hero-bignum {
+    inset-block-start: auto;
+    inset-block-end: 36%;
+    inset-inline-start: -6vw;
+  }
+
+  .hero-bignum span {
+    font-size: 62vw;
   }
 
   .card {
@@ -1619,5 +1921,66 @@ a.contact-item:hover {
   .tile-media img,
   .product-card {
     transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .story {
+    align-items: start;
+    padding-block: calc(var(--sh-height, 60px) + 12px) 22px;
+  }
+
+  .story-inner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .story-media {
+    order: -1;
+    aspect-ratio: auto;
+    block-size: 42svh;
+    max-block-size: none;
+    border-radius: 20px;
+  }
+
+  .story h2 {
+    font-size: 1.5rem;
+  }
+
+  .story-captions {
+    min-block-size: 132px;
+    margin-block: 14px 10px;
+  }
+
+  .story-caption p {
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+
+  .story-bignum {
+    place-content: end center;
+    padding-inline-start: 0;
+    padding-block-end: 4svh;
+  }
+
+  .story-bignum span {
+    font-size: 78vw;
+  }
+
+  .story-badge {
+    inset-block-end: 12px;
+    inset-inline-start: 12px;
+    padding: 8px 12px;
+  }
+
+  .story-badge strong {
+    font-size: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-wrap .float-card,
+  .story-badge {
+    animation: none;
   }
 }
