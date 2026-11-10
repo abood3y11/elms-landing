@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, Star } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Star, UserRound } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Card } from '../content';
 import './ui.css';
@@ -151,6 +151,32 @@ export function Stars({ score }: { score: string }) {
       {Array.from({ length: 5 }).map((_, index) => <Star key={index} size={15} fill="currentColor" aria-hidden="true" />)}
       <b>{score}</b>
     </span>
+  );
+}
+
+/** Wide review cards drifting in one or two rows; hovering pauses them. */
+export function Reviews({ items }: { items: { name: string; text: string; score: string; role?: string }[] }) {
+  const rows = items.length >= 8 ? [items.slice(0, Math.ceil(items.length / 2)), items.slice(Math.ceil(items.length / 2))] : [items];
+  return (
+    <div className="reviews" data-reveal="up">
+      {rows.map((row, r) => (
+        <div key={r} className={`reviews-row${r % 2 ? ' is-reverse' : ''}`}>
+          <div className="reviews-track">
+            {[...row, ...row].map((item, i) => (
+              <figure key={`${item.name}-${i}`} className="review-card" aria-hidden={i >= row.length || undefined}>
+                <span className="review-mark" aria-hidden="true">”</span>
+                <blockquote>{item.text}</blockquote>
+                <figcaption>
+                  <span className="review-avatar" aria-hidden="true"><UserRound size={22} /></span>
+                  <span className="review-who"><strong>{item.name}</strong>{item.role && <small>{item.role}</small>}</span>
+                  <Stars score={item.score} />
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 

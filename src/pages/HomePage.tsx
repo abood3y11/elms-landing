@@ -6,7 +6,7 @@ import { ArrowLeft, BellRing, CheckCircle2, Mail, MapPin, MessageCircle, Phone, 
 import { PageShell, reducedMotion } from '../motion/motion';
 import { faqs, gallery, heroProofs, img, journey, marqueeItems, products, promises, quickAnswers, services, stats, testimonials } from '../content';
 import { companyAddress, companyEmail, companyPhones, telHref, whatsappHref } from '../site';
-import { CardGrid, Commitments, Faq, ImageTile, Marquee, Section, SectionHead, Stars, StepsLine } from '../ui/Blocks';
+import { CardGrid, Commitments, Faq, ImageTile, Marquee, Reviews, Section, SectionHead, StepsLine } from '../ui/Blocks';
 import { QuoteForm } from '../ui/QuoteForm';
 
 const ScrollElevatorRail = lazy(() => import('../components/ScrollElevatorRail'));
@@ -168,19 +168,18 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          <div className="hero-stats">
+            <div className="stats-grid" data-reveal="up">
+              {stats.map((item) => (
+                <div key={item.label}>
+                  <strong><span data-count={item.value}>{item.value}</span>{item.suffix}</strong>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
-
-      <div className="stats">
-        <div className="stats-grid" data-reveal="up">
-          {stats.map((item) => (
-            <div key={item.label}>
-              <strong><span data-count={item.value}>{item.value}</span>{item.suffix}</strong>
-              <span>{item.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
       <section className="quick" aria-label="إجابات سريعة">
         <div className="quick-grid" data-stagger>
@@ -273,15 +272,7 @@ export default function HomePage() {
 
       <Section tone="dark">
         <SectionHead eyebrow="آراء العملاء" title="خدمة واضحة من أول معاينة حتى ما بعد التسليم." center />
-        <div className="testimonials" data-stagger>
-          {testimonials.map((item) => (
-            <figure key={item.name} className="quote-card">
-              <Stars score={item.score} />
-              <p>«{item.text}»</p>
-              <strong>{item.name}</strong>
-            </figure>
-          ))}
-        </div>
+        <Reviews items={testimonials} />
       </Section>
 
       <Section tone="soft" id="faq">

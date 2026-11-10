@@ -2369,3 +2369,157 @@ a.contact-item:hover {
     padding: 6px 10px;
   }
 }
+
+/* ---------- hero stats live inside the hero ---------- */
+
+.hero-stats {
+  grid-column: 1 / -1;
+  margin-block-start: clamp(4px, 1.5vw, 16px);
+}
+
+.quick {
+  padding-block-end: clamp(48px, 7vw, 88px);
+}
+
+/* ---------- reviews: wide cards that drift ---------- */
+
+.reviews {
+  display: grid;
+  gap: 18px;
+  margin-inline: calc(-1 * var(--ui-gutter));
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.reviews-row {
+  overflow: hidden;
+}
+
+.reviews-track {
+  display: flex;
+  inline-size: max-content;
+  gap: 18px;
+  padding-block: 6px;
+  animation: ui-reviews 60s linear infinite;
+}
+
+.reviews-row.is-reverse .reviews-track {
+  animation-direction: reverse;
+  animation-duration: 70s;
+}
+
+.reviews-row:hover .reviews-track,
+.reviews-row:focus-within .reviews-track {
+  animation-play-state: paused;
+}
+
+@keyframes ui-reviews {
+  to { transform: translateX(calc(50% + 9px)); }
+}
+
+[dir='ltr'] .reviews-track {
+  animation-name: ui-reviews-ltr;
+}
+
+@keyframes ui-reviews-ltr {
+  to { transform: translateX(calc(-50% - 9px)); }
+}
+
+.review-card {
+  position: relative;
+  flex: none;
+  inline-size: clamp(300px, 34vw, 460px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0;
+  padding: 28px 28px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
+  backdrop-filter: blur(6px);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.review-card:hover {
+  border-color: rgba(242, 196, 109, 0.45);
+  transform: translateY(-3px);
+}
+
+.review-mark {
+  position: absolute;
+  inset-block-start: 6px;
+  inset-inline-end: 22px;
+  color: rgba(242, 196, 109, 0.35);
+  font-family: Georgia, serif;
+  font-size: 5rem;
+  line-height: 1;
+}
+
+.review-card blockquote {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.9;
+}
+
+.review-card figcaption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block-start: auto;
+  padding-block-start: 16px;
+  border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.review-avatar {
+  inline-size: 44px;
+  block-size: 44px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ui-gold);
+  color: var(--navy);
+  font-weight: 900;
+}
+
+.review-who {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.review-who strong {
+  color: #fff;
+}
+
+.review-who small {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.review-card .stars b {
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .review-card {
+    inline-size: 82vw;
+    padding: 22px 20px 18px;
+  }
+
+  .review-card blockquote {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviews-row {
+    overflow-x: auto;
+  }
+
+  .reviews-track {
+    animation: none;
+  }
+}
