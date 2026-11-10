@@ -1,11 +1,12 @@
 import { lazy, Suspense, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, BellRing, ClipboardCheck, Mail, MapPin, MessageCircle, Phone, ShieldCheck, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { ArrowLeft, BellRing, CheckCircle2, Mail, MapPin, MessageCircle, Phone, ShieldCheck, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { PageShell, reducedMotion } from '../motion/motion';
-import { gallery, img, marqueeItems, processSteps, products, services, stats, testimonials } from '../content';
+import { faqs, gallery, heroProofs, img, journey, marqueeItems, products, promises, quickAnswers, services, stats, testimonials } from '../content';
 import { companyAddress, companyEmail, companyPhones, telHref, whatsappHref } from '../site';
-import { CardGrid, CtaBand, ImageTile, Marquee, Section, SectionHead, Stars, StepsLine } from '../ui/Blocks';
+import { CardGrid, Commitments, Faq, ImageTile, Marquee, Section, SectionHead, Stars, StepsLine } from '../ui/Blocks';
 import { QuoteForm } from '../ui/QuoteForm';
 
 const ScrollElevatorRail = lazy(() => import('../components/ScrollElevatorRail'));
@@ -59,6 +60,7 @@ function useHomeScenes(root: React.RefObject<HTMLDivElement | null>) {
           start: 'top top',
           end: () => '+=' + String(window.innerHeight * steps * 0.7),
           pin: true,
+          refreshPriority: 1,
           scrub: 0.8,
           anticipatePin: 1,
           invalidateOnRefresh: true,
@@ -79,6 +81,8 @@ function useHomeScenes(root: React.RefObject<HTMLDivElement | null>) {
           .fromTo(captions[i], { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.45 }, at + 0.45);
       }
     }, scope);
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
     return () => ctx.revert();
   }, [root]);
 }
@@ -126,19 +130,18 @@ export default function HomePage() {
         <div className="hero-bignum" aria-hidden="true"><span>30</span><small>عامًا من الريادة</small></div>
         <div className="hero-inner">
           <div>
-            <span className="pill" data-reveal="up"><Sparkles size={15} aria-hidden="true" /> تركيب وصيانة وتحديث المصاعد</span>
-            <h1 data-reveal="up">مصاعد آمنة <em>بتصميم يليق</em> بمبناك.</h1>
+            <span className="pill" data-reveal="up"><Sparkles size={15} aria-hidden="true" /> أكثر من 30 عامًا في المصاعد — مكة المكرمة</span>
+            <h1 data-reveal="up">اطمئن على كل من <em>يركب مصعدك.</em></h1>
             <p className="hero-lead" data-reveal="up">
-              نركّب مصاعد الفلل والمباني التجارية، ونتابعها بعقود صيانة ودعم طوارئ على مدار الساعة — وصمّم كابينتك بنفسك قبل أن نبدأ.
+              أهل بيتك، سكان عمارتك، أو زوار منشأتك: نعاين مبناك قبل أي عرض سعر، ونختبر أنظمة السلامة أمامك قبل التسليم،
+              ثم نتابع المصعد بعقد صيانة وبلاغات موثقة في نظامنا ودعم طوارئ على مدار الساعة.
             </p>
             <div className="actions" data-reveal="up">
-              <Link to="/configure" className="btn btn-primary btn-lg"><SlidersHorizontal size={18} aria-hidden="true" /> صمّم مصعدك</Link>
+              <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg"><MessageCircle size={18} aria-hidden="true" /> احجز معاينة على واتساب</a>
               <a href={telHref} className="btn btn-ghost btn-lg"><Phone size={18} aria-hidden="true" /> <span dir="ltr">{companyPhones[0]}</span></a>
             </div>
-            <ul className="hero-trust" data-stagger>
-              <li><ShieldCheck size={18} aria-hidden="true" /> اختبارات سلامة قبل التسليم</li>
-              <li><BellRing size={18} aria-hidden="true" /> طوارئ 24/7</li>
-              <li><ClipboardCheck size={18} aria-hidden="true" /> عقود صيانة AMC</li>
+            <ul className="hero-proofs" data-stagger>
+              {heroProofs.map((proof) => <li key={proof}><CheckCircle2 size={16} aria-hidden="true" /> {proof}</li>)}
             </ul>
           </div>
           <div className="hero-visual" data-reveal="scale">
@@ -179,10 +182,30 @@ export default function HomePage() {
         </div>
       </div>
 
+      <section className="quick" aria-label="إجابات سريعة">
+        <div className="quick-grid" data-stagger>
+          {quickAnswers.map((item) => (
+            <article key={item.q} className="quick-item">
+              <strong>{item.q}</strong>
+              <p>{item.a}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <Story />
 
-      <Section id="services">
-        <SectionHead eyebrow="خدماتنا" title="كل ما يحتاجه مصعدك، من المعاينة حتى الصيانة." lead="فريق واحد يتابع مصعدك من أول زيارة، فلا تتنقل بين أكثر من جهة." />
+      <Section id="promises">
+        <SectionHead
+          eyebrow="وعدنا لك"
+          title="30 عامًا علّمتنا أن الثقة تُبنى بخطوات واضحة، لا بالكلام."
+          lead="اختيار شركة المصاعد قرار يعيش معك سنوات. لذلك نحوّل كل وعد إلى خطوة تعرفها وترى نتيجتها: قبل أن تدفع، ويوم التسليم، وفي كل زيارة بعده."
+        />
+        <Commitments items={promises} />
+      </Section>
+
+      <Section tone="soft" id="services">
+        <SectionHead eyebrow="خدماتنا" title="من أول معاينة إلى آخر زيارة صيانة." lead="للفلل والعمائر والمباني التجارية والمنشآت الصحية — فريق واحد مسؤول عن مصعدك طوال عمره." />
         <CardGrid cards={services} links={services.map((item) => item.to)} />
       </Section>
 
@@ -191,7 +214,7 @@ export default function HomePage() {
       <Section tone="dark" id="designer">
         <div className="designer-promo">
           <div>
-            <SectionHead eyebrow="جديد — صمّم مصعدك" title="شاهد كابينتك قبل أن نركّبها." lead="جرّب الجدران والأرضيات والأسقف والأبواب على معاينة ثلاثية الأبعاد، ثم أرسل التصميم لنرد بعرض السعر." />
+            <SectionHead eyebrow="صمّم مصعدك" title="شاهد كابينتك قبل أن نركّبها." lead="جرّب الجدران والأرضيات والأسقف والأبواب على معاينة ثلاثية الأبعاد، ثم أرسل التصميم لنرد بعرض السعر." />
             <ol className="designer-steps" data-stagger>
               <li><div><strong>اختر موقعك</strong><small>المنطقة والمدينة ونوع المصعد</small></div></li>
               <li><div><strong>جرّب الخامات</strong><small>خشب، رخام، استيل، وإضاءة</small></div></li>
@@ -210,8 +233,8 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Section tone="soft" id="products">
-        <SectionHead eyebrow="منتجاتنا" title="مصعد مناسب لكل مبنى." lead="من الفلل الصغيرة إلى المنشآت الصحية، نختار الحل حسب المساحة والاستخدام." />
+      <Section id="products">
+        <SectionHead eyebrow="منتجاتنا" title="لكل مبنى المصعد الذي يناسبه." lead="من الفلل الصغيرة إلى المنشآت الصحية، نختار الحل حسب المساحة والاستخدام — ونقولك بصراحة إذا كان نوع ما لا يناسب مبناك." />
         <div className="cards cols-4" data-stagger>
           {products.map((product) => (
             <Link key={product.slug} to={`/products/${product.slug}`} className="product-card">
@@ -226,20 +249,20 @@ export default function HomePage() {
         </div>
       </Section>
 
-      <Section>
+      <Section tone="soft" id="journey">
         <div className="split">
           <div>
-            <SectionHead eyebrow="كيف نعمل" title="أربع خطوات واضحة حتى يعمل مصعدك." lead="تعرف في كل مرحلة ما تم وما التالي." />
-            <StepsLine steps={processSteps} />
+            <SectionHead eyebrow="رحلة مصعدك" title="6 محطات واضحة، وفي كل محطة تعرف ماذا تستلم." lead="لا نبدأ عملًا وأنت لا تعرف ماذا سيحدث. تعرف دائمًا أين وصلنا وما الخطوة التالية." />
+            <StepsLine steps={journey} />
           </div>
-          <div className="split-media" data-reveal="scale">
+          <div className="split-media sticky-media" data-reveal="scale">
             <div className="parallax-frame"><img src={img('glass-stairs')} alt="تركيب مصعد زجاجي بجانب الدرج" loading="lazy" data-parallax="0.15" /></div>
           </div>
         </div>
       </Section>
 
-      <Section tone="soft" id="projects">
-        <SectionHead eyebrow="من أعمالنا" title="مصاعد ركّبناها في مكة وما حولها." />
+      <Section id="projects">
+        <SectionHead eyebrow="من أعمالنا" title="مصاعد ركّبناها… شاهد التفاصيل بنفسك." lead="فلل وقصور ومبانٍ سكنية في مكة وما حولها." />
         <div className="gallery" data-stagger>
           {gallery.slice(0, 6).map((item) => <ImageTile key={item.title} image={item.image} title={item.title} tag={item.tag} />)}
         </div>
@@ -261,25 +284,27 @@ export default function HomePage() {
         </div>
       </Section>
 
+      <Section tone="soft" id="faq">
+        <div className="split align-start">
+          <SectionHead eyebrow="الأسئلة الشائعة" title="قبل أن تقرر… إجابات واضحة على أكثر ما يُسأل." lead="جمعنا الأسئلة التي يسألها عملاؤنا فعلًا قبل التركيب وبعده." />
+          <Faq items={faqs} />
+        </div>
+      </Section>
+
       <Section id="quote">
         <div className="quote-layout">
           <div>
-            <SectionHead eyebrow="طلب عرض سعر" title="أخبرنا عن مشروعك." lead="املأ الطلب أو تواصل معنا مباشرة، ونرتب لك زيارة معاينة." />
+            <SectionHead eyebrow="خطوتك الأولى" title="احجز معاينة مصعدك." lead="أسهل بداية: رسالة واتساب أو اتصال. أخبرنا بالمدينة، ونوع المبنى، وعدد الأدوار، وهل يوجد بئر جاهز — ونحدد معك موعد المعاينة. وللأعطال والطوارئ نفس الرقم." />
             <div className="contact-stack" data-stagger>
-              <a className="contact-item" href={telHref}><span className="card-icon" aria-hidden="true"><Phone size={20} /></span><span><small>اتصل بنا</small><strong dir="ltr">{companyPhones[0]}</strong></span></a>
-              <a className="contact-item" href={whatsappHref} target="_blank" rel="noopener noreferrer"><span className="card-icon" aria-hidden="true"><MessageCircle size={20} /></span><span><small>واتساب</small><strong>راسلنا مباشرة</strong></span></a>
+              <a className="contact-item" href={telHref}><span className="card-icon" aria-hidden="true"><Phone size={20} /></span><span><small>اتصال مباشر — للحجز والأعطال والطوارئ</small><strong dir="ltr">{companyPhones[0]}</strong></span></a>
+              <a className="contact-item" href={whatsappHref} target="_blank" rel="noopener noreferrer"><span className="card-icon" aria-hidden="true"><MessageCircle size={20} /></span><span><small>واتساب — اسأل عن مصعدك واحجز معاينتك</small><strong>راسلنا مباشرة</strong></span></a>
               <a className="contact-item" href={`mailto:${companyEmail}`}><span className="card-icon" aria-hidden="true"><Mail size={20} /></span><span><small>البريد</small><strong>{companyEmail}</strong></span></a>
               <div className="contact-item"><span className="card-icon" aria-hidden="true"><MapPin size={20} /></span><span><small>العنوان</small><strong>{companyAddress}</strong></span></div>
             </div>
           </div>
-          <div data-reveal="up"><QuoteForm /></div>
+          <div data-reveal="up"><QuoteForm title="أو أرسل طلبك هنا" /></div>
         </div>
       </Section>
-
-      <CtaBand title="صمّم كابينة مصعدك الآن" text="اختر الخامات وشاهد النتيجة فورًا، ثم أرسل التصميم لنرد بعرض السعر.">
-        <Link to="/configure" className="btn btn-light btn-lg"><SlidersHorizontal size={18} aria-hidden="true" /> صمّم مصعدك</Link>
-        <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-lg"><MessageCircle size={18} aria-hidden="true" /> واتساب</a>
-      </CtaBand>
     </PageShell>
     </div>
   );

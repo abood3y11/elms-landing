@@ -27,20 +27,25 @@ export function useScrollMotion(root: RefObject<HTMLElement | null>) {
     const rtl = isRtl();
 
     const ctx = gsap.context(() => {
+      // fromTo, not from: a `from` tween animates to whatever the element looks like when it is
+      // created, so an element that is already hidden then animates hidden → hidden and stays empty.
       gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
         const kind = el.dataset.reveal;
-        const from: gsap.TweenVars = { autoAlpha: 0, duration: 0.9, ease: 'power3.out' };
+        const from: gsap.TweenVars = { autoAlpha: 0 };
         if (kind === 'start') from.x = rtl ? 60 : -60;
         else if (kind === 'end') from.x = rtl ? -60 : 60;
         else if (kind === 'scale') { from.scale = 0.92; from.y = 20; }
         else from.y = 42;
-        gsap.from(el, { ...from, scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+        gsap.fromTo(el, from, {
+          autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+        });
       });
 
       gsap.utils.toArray<HTMLElement>('[data-stagger]').forEach((group) => {
-        gsap.from(group.children, {
-          autoAlpha: 0,
-          y: 34,
+        gsap.fromTo(group.children, { autoAlpha: 0, y: 34 }, {
+          autoAlpha: 1,
+          y: 0,
           duration: 0.75,
           ease: 'power3.out',
           stagger: 0.08,

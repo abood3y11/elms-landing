@@ -5,11 +5,11 @@ const RailElevatorScene = lazy(() => import('./RailElevatorScene'));
 /** Home-page stops; each id is a section on the page, so a click rides the lift there. */
 export const railStops = [
   { id: 'top', label: 'البداية' },
+  { id: 'promises', label: 'وعودنا' },
   { id: 'services', label: 'الخدمات' },
-  { id: 'designer', label: 'صمّم مصعدك' },
-  { id: 'products', label: 'المنتجات' },
+  { id: 'journey', label: 'رحلة مصعدك' },
   { id: 'projects', label: 'المشاريع' },
-  { id: 'quote', label: 'طلب عرض' },
+  { id: 'quote', label: 'طلب معاينة' },
 ];
 
 /**
@@ -89,7 +89,8 @@ export default function ScrollElevatorRail() {
             <button
               type="button"
               key={stop.id}
-              className={index <= active ? 'active' : undefined}
+              className={`${index <= active ? 'active' : ''}${index === active ? ' is-current' : ''}`}
+              aria-label={stop.label}
               style={{ top: `${(index / (railStops.length - 1)) * 100}%` }}
               onClick={() => go(stop.id)}
               tabIndex={hidden ? -1 : 0}

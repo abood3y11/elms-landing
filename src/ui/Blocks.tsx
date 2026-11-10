@@ -86,7 +86,7 @@ export function CardGrid({ cards, cols = 3, links }: { cards: Card[]; cols?: 2 |
 }
 
 /** Numbered steps joined by a line that fills as the section scrolls past. */
-export function StepsLine({ steps }: { steps: Card[] }) {
+export function StepsLine({ steps }: { steps: (Card & { deliver?: string })[] }) {
   return (
     <ol className="steps">
       <span className="steps-track" aria-hidden="true"><span className="steps-fill" data-line-y /></span>
@@ -97,6 +97,7 @@ export function StepsLine({ steps }: { steps: Card[] }) {
             <span className="card-icon sm" aria-hidden="true">{step.icon}</span>
             <h3>{step.title}</h3>
             <p>{step.text}</p>
+            {step.deliver && <p className="steps-deliver"><b>تستلم:</b> {step.deliver}</p>}
           </div>
         </li>
       ))}
@@ -158,5 +159,36 @@ export function CheckList({ items }: { items: string[] }) {
     <ul className="checks" data-stagger>
       {items.map((item) => <li key={item}>{item}</li>)}
     </ul>
+  );
+}
+
+/** Numbered commitments: what we do, and what the customer gets from it. */
+export function Commitments({ items }: { items: { title: string; points: string[]; benefit: string; to?: string; cta?: string }[] }) {
+  return (
+    <div className="commit-grid" data-stagger>
+      {items.map((item, index) => (
+        <article key={item.title} className="commit">
+          <span className="commit-num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+          <h3>{item.title}</h3>
+          <ul>{item.points.map((point) => <li key={point}>{point}</li>)}</ul>
+          <p className="commit-benefit"><b>تستفيد:</b> {item.benefit}</p>
+          {item.to && <Link to={item.to} className="card-more">{item.cta} <ArrowLeft size={16} className="flip" aria-hidden="true" /></Link>}
+        </article>
+      ))}
+    </div>
+  );
+}
+
+/** Questions in the customer's words, answered plainly. */
+export function Faq({ items }: { items: { q: string; a: string }[] }) {
+  return (
+    <div className="faq" data-stagger>
+      {items.map((item, index) => (
+        <details key={item.q} className="faq-item" open={index === 0}>
+          <summary><span>{item.q}</span><i aria-hidden="true" /></summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
   );
 }
