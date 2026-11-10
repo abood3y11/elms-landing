@@ -56,8 +56,8 @@
 }
 
 .sh-brand img {
-  inline-size: 44px;
-  block-size: 44px;
+  inline-size: 50px;
+  block-size: 48px;
   flex: none;
   object-fit: contain;
 }
@@ -458,9 +458,8 @@
 }
 
 .sf-brand img {
-  padding: 4px;
-  border-radius: 10px;
-  background: #fff;
+  inline-size: 64px;
+  block-size: 60px;
 }
 
 .sf-brand small {
@@ -534,8 +533,8 @@
   }
 
   .sh-brand img {
-    inline-size: 38px;
-    block-size: 38px;
+    inline-size: 44px;
+    block-size: 42px;
   }
 
   .sh-call {
